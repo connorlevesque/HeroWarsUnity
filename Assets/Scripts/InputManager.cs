@@ -81,20 +81,21 @@ public class InputManager : MonoBehaviour {
 	{
 		if (CanReceiveInput() && CurrentState() != "base")
 		{
-			Vector2 position = instance.selectedUnit.transform.position;
-			if (CurrentState() == "action" && position != Pather.center)
+			if (CurrentState() == "action")
 			{
-				GridManager.MoveUnit(position, Pather.center);
-				EnterState("action");
-			} else {
-				ExitState(instance.states.Pop());
-				if (CurrentState() == "action")
+				Vector2 position = instance.selectedUnit.transform.position;
+				if (position != Pather.center)
 				{
+					GridManager.MoveUnit(position, Pather.center);
+					EnterState("action");
+				} else {
+					ExitState(instance.states.Pop());
 					bool canCapture = GridManager.CanUnitCapture(instance.selectedUnit);
 					instance.uiManager.ShowActionUI(new List<Vector2>(), canCapture);
-				} else {
-					EnterState(CurrentState());
 				}
+			} else {
+				ExitState(instance.states.Pop());
+				EnterState(CurrentState());
 			}
 		}
 	}
@@ -188,6 +189,8 @@ public class InputManager : MonoBehaviour {
 	{
 		if (CanReceiveInput() && CurrentState() == "production" && instance.selectedPrefab != null)
 		{
+			BattleManager.ChangeFunds(instance.selectedPrefab.GetComponent<Unit>().cost * -1);
+			instance.uiManager.UpdateFundsDisplay();
 			GridManager.AddUnit(instance.selectedPrefab, instance.selectedBuilding.transform.position);
 			ExitState("production");
 			instance.states.Clear();

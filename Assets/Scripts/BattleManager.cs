@@ -48,6 +48,11 @@ public class BattleManager : MonoBehaviour {
 		return instance.funds[instance.currentPlayerIndex];
 	}
 
+	public static void ChangeFunds(int amount)
+	{
+		instance.funds[GetCurrentPlayerIndex()] += amount;
+	}
+
 	// initialization
 	void Awake()
 	{
