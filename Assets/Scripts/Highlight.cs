@@ -7,6 +7,11 @@ public class Highlight : MonoBehaviour {
 
 	void OnMouseUpAsButton()
 	{
-		InputManager.HighlightClicked(this.color);
+		if (color == "blue")
+		{
+			InputManager.MoveHighlightClicked(transform.position);
+		} else if (color == "red") {
+			InputManager.AttackHighlightClicked(transform.position);
+		}
 	}
 }

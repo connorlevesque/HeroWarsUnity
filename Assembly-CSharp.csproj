@@ -45,12 +45,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\BattleManager.cs" />
      <Compile Include="Assets\Scripts\Building.cs" />
      <Compile Include="Assets\Scripts\CameraDrag.cs" />
+     <Compile Include="Assets\Scripts\Combat.cs" />
      <Compile Include="Assets\Scripts\GridManager.cs" />
      <Compile Include="Assets\Scripts\Highlight.cs" />
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\Pather.cs" />
+     <Compile Include="Assets\Scripts\Player.cs" />
+     <Compile Include="Assets\Scripts\ProductionMenu.cs" />
+     <Compile Include="Assets\Scripts\ProductionSlot.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />
      <Compile Include="Assets\Scripts\UIManager.cs" />
      <Compile Include="Assets\Scripts\Unit.cs" />

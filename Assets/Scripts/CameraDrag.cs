@@ -3,9 +3,9 @@
 public class CameraDrag : MonoBehaviour
 {
     public float dragSpeed = 8;
+    public float mapBuffer;
     private Vector3 dragOrigin;
 
-    private float mapBuffer = 1;
     private float leftBound;
     private float rightBound;
     private float upperBound;
