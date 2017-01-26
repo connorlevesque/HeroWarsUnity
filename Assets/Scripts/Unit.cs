@@ -2,36 +2,51 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public enum UnitType { footman, archer, barbarian, guard, scout, knight, greatKnight, catapult, bombard };
+public enum UnitType { footman, archer, scout, catapult, knight, guard, bombard, greatKnight };
 public enum UnitGroup { infantry, cavalry, artillery, flying }
 
 public class Unit : MonoBehaviour {
 
+	// general properties
 	public UnitType type;
 	public UnitGroup grouping;
 	public bool activated = true;
 	public int owner;
 	public int movePoints;
 	public int[] range = new int[2];
+	// ride/drop properties
+	public bool canCarry = false;
+	public Unit cargo;
+	// combat properties
 	public int cost;
 	public int health = 100;
-	// ride/drop action variables
-	// public bool canCarry = false;
-	// public Unit cargo;
-
-	// combat properties
-
-	public bool active = true;
+	public int damage;
+	public int bonusDamage;
+	public float pen;
+	public float bonusPen;
+	public UnitGroup bonusCondition;
+	public float armor;
+	// UI references
 	private Color inactiveColor = Color.gray;
 	private SpriteRenderer spriteRenderer;
-	private GameObject canvas;
+	private GameObject healthLabel;
 	private Text healthText;
+	private GameObject carryLabel;
+	private Text carryText;
+	private GameObject damageLabel;
+	private Text damageText;
+	// AI properties
+	private float powerConstant = 1;
 
 	void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
-		canvas = transform.GetChild(0).gameObject;
-		healthText = transform.GetChild(0).GetChild(1).GetComponent<Text>();
+		healthLabel = transform.GetChild(0).GetChild(0).gameObject;
+		healthText = transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Text>();
+		carryLabel = transform.GetChild(0).GetChild(1).gameObject;
+		carryText = transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
+		damageLabel = transform.GetChild(0).GetChild(2).gameObject;
+		damageText = transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Text>();
 	}
 
 	void OnMouseUpAsButton()
@@ -47,17 +62,17 @@ public class Unit : MonoBehaviour {
 		if (h <= 9)
 		{
 			healthText.text = h.ToString();
-			canvas.SetActive(true);
+			healthLabel.SetActive(true);
 		} else {
 			healthText.text = "";
-			canvas.SetActive(false);
+			healthLabel.SetActive(false);
 		}
 		GridManager.UpdateUnit(this);
 	}
 
 	public int HealthInt()
 	{
-		return Mathf.CeilToInt(health / 10);
+		return Mathf.CeilToInt(health / 10f);
 	}
 
 	public void Activate()
@@ -70,6 +85,23 @@ public class Unit : MonoBehaviour {
 	{
 		activated = false;
 		spriteRenderer.color = inactiveColor;
+	}
+
+	public void ShowDamageLabel(int amount)
+	{
+		damageText.text = amount.ToString();
+		damageLabel.SetActive(true);
+	}
+
+	public void HideDamageLabel()
+	{
+		damageLabel.SetActive(false);
+	}
+
+	// AI relevant methods
+	public float GetPower()
+	{
+		return cost * powerConstant * health / 100f;
 	}
 
 }

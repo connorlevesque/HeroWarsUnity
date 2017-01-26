@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour {
 	public GameObject nextBtn;
 	public GameObject attackBtn;
 	public GameObject captureBtn;
+	public GameObject rideBtn;
+	public GameObject dropBtn;
 	public GameObject waitBtn;
 	public GameObject endTurnBtn;
 	public GameObject fundsDisplay;
@@ -33,6 +35,8 @@ public class UIManager : MonoBehaviour {
 		nextBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.NextBtnClicked());
 		attackBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.AttackBtnClicked());
 		captureBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.CaptureBtnClicked());
+		rideBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.RideBtnClicked());
+		dropBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.DropBtnClicked());
 		waitBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.WaitBtnClicked());
 		endTurnBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.EndTurnBtnClicked());
 	}
@@ -50,7 +54,8 @@ public class UIManager : MonoBehaviour {
 		}
 		foreach(Vector2 coord in coords)
 		{
-			highlight = (GameObject) Instantiate(highlight, coord, Quaternion.identity);
+			Vector3 position = new Vector3(coord.x, coord.y, -1);
+			highlight = (GameObject) Instantiate(highlight, position, Quaternion.identity);
 			highlights.Add(highlight);
 		}
 	}
@@ -91,10 +96,13 @@ public class UIManager : MonoBehaviour {
 	}
 
 	// action
-	public void ShowActionUI(List<Vector2> highlightCoords, bool canCapture)
+	public void ShowActionUI(List<Vector2> highlightCoords, bool canCapture, bool canAttack, bool canRide, bool canDrop)
 	{
 		attackBtn.SetActive(true);
+		ToggleAttackBtn(canAttack);
 		ToggleCaptureBtn(canCapture);
+		ToggleRideBtn(canRide);
+		ToggleDropBtn(canDrop);
 		Highlight(highlightCoords, "blue");
 	}
 
@@ -108,8 +116,31 @@ public class UIManager : MonoBehaviour {
 
 	public void ToggleCaptureBtn(bool turnOn)
 	{
+		Debug.LogFormat("ToggleCaptureBtn = {0}", turnOn);
 		captureBtn.SetActive(turnOn);
 		waitBtn.SetActive(!turnOn);
+	}
+
+	public void ToggleAttackBtn(bool canAttack)
+	{
+		attackBtn.GetComponent<Button>().interactable = canAttack;
+		if (canAttack)
+		{
+			attackBtn.GetComponent<Image>().color = Color.white;
+		} else {
+			attackBtn.GetComponent<Image>().color = Color.gray;
+		}
+	}
+
+	public void ToggleRideBtn(bool turnOn)
+	{
+		// rideBtn.SetActive(turnOn);
+		// waitBtn.SetActive(!turnOn);
+	}
+
+	public void ToggleDropBtn(bool turnOn)
+	{
+		// dropBtn.SetActive(turnOn);
 	}
 
 	// target

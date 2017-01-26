@@ -49,8 +49,11 @@
      <Compile Include="Assets\Scripts\Building.cs" />
      <Compile Include="Assets\Scripts\CameraDrag.cs" />
      <Compile Include="Assets\Scripts\Combat.cs" />
+     <Compile Include="Assets\Scripts\ComputerOpponent.cs" />
+     <Compile Include="Assets\Scripts\DamageTable.cs" />
      <Compile Include="Assets\Scripts\GridManager.cs" />
      <Compile Include="Assets\Scripts\Highlight.cs" />
+     <Compile Include="Assets\Scripts\Influence.cs" />
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\Pather.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />

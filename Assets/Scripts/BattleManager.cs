@@ -14,7 +14,7 @@ public class BattleManager : MonoBehaviour {
 	private Player[] players;
 	private string[] colors = new string[] {"gray", "red", "blue"};
 	private PlayerType[] playerTypes = new PlayerType[] 
-		{PlayerType.none, PlayerType.local, PlayerType.local};
+		{PlayerType.none, PlayerType.local, PlayerType.computer};
 	private int turn = 1;
 	private int[] funds;
 
@@ -41,6 +41,11 @@ public class BattleManager : MonoBehaviour {
 	public static int GetCurrentPlayerIndex()
 	{
 		return instance.currentPlayerIndex;
+	}
+
+	public static PlayerType GetCurrentPlayerType()
+	{
+		return instance.playerTypes[GetCurrentPlayerIndex()];
 	}
 
 	public static int GetFundsForCurrentPlayer()

@@ -221,7 +221,7 @@ public class GridManager : MonoBehaviour {
 		instance.units.Remove(a);
 		instance.units.Add(b,unit);
 		unit.transform.position = b;
-		InputManager.CheckCanCapture();
+		InputManager.CheckActions();
 	}
 
 	public static void ActivateUnits()
@@ -229,6 +229,30 @@ public class GridManager : MonoBehaviour {
 		foreach (Unit unit in GetFriendlyUnits().Values)
 		{
 			unit.Activate();
+		}
+	}
+
+	public static void ShowDamageLabels(List<Vector2> positions, Unit attackingUnit)
+	{
+		foreach (Vector2 position in positions)
+		{
+			if (instance.units.ContainsKey(position))
+			{
+				Unit targetUnit = instance.units[position];
+				if (Combat.CanAttack(attackingUnit, targetUnit))
+				{
+					int damage = Combat.GetFinalDamage(attackingUnit, targetUnit, false);
+					targetUnit.ShowDamageLabel(damage);
+				}
+			}
+		}
+	}
+
+	public static void HideDamageLabels()
+	{
+		foreach (Unit unit in GetUnits().Values)
+		{
+			unit.HideDamageLabel();
 		}
 	}
 

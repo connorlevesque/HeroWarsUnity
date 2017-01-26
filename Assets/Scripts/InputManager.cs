@@ -46,6 +46,7 @@ public class InputManager : MonoBehaviour {
 
 	public static void UnitClicked(Unit unit)
 	{
+		Debug.Log("Unit Clicked");
 		if (CanReceiveInput() && CurrentState() == "base")
 		{
 			if (unit.owner == BattleManager.GetCurrentPlayerIndex() && unit.activated)
@@ -90,12 +91,23 @@ public class InputManager : MonoBehaviour {
 					EnterState("action");
 				} else {
 					ExitState(instance.states.Pop());
-					bool canCapture = GridManager.CanUnitCapture(instance.selectedUnit);
-					instance.uiManager.ShowActionUI(new List<Vector2>(), canCapture);
+					EnterState(CurrentState());
 				}
 			} else {
 				ExitState(instance.states.Pop());
-				EnterState(CurrentState());
+				if (CurrentState() == "action")
+				{
+					Vector2 position = instance.selectedUnit.transform.position;
+					if (position == Pather.center)
+					{
+						EnterState("action");
+					} else {
+						bool canCapture = GridManager.CanUnitCapture(instance.selectedUnit);
+						instance.uiManager.ShowActionUI(new List<Vector2>(), canCapture, CanUseAttackAction(), false, false);
+					}
+				} else {
+					EnterState(CurrentState());
+				}
 			}
 		}
 	}
@@ -117,11 +129,35 @@ public class InputManager : MonoBehaviour {
 		}
 	}
 
-	public static void CheckCanCapture()
+	public static void CheckActions()
 	{
 		if (CurrentState() == "action")
 		{
 			instance.uiManager.ToggleCaptureBtn(GridManager.CanUnitCapture(instance.selectedUnit));
+			instance.uiManager.ToggleAttackBtn(CanUseAttackAction());
+			instance.uiManager.ToggleRideBtn(false);
+			instance.uiManager.ToggleDropBtn(false);
+		}
+	}
+
+	public static bool CanUseAttackAction()
+	{
+		if (instance.selectedUnit.grouping == UnitGroup.artillery && HasMoved())
+		{
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public static bool HasMoved()
+	{
+		Vector2 position = instance.selectedUnit.transform.position;
+		if (position == Pather.center)
+		{
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -152,6 +188,42 @@ public class InputManager : MonoBehaviour {
 		}
 	}
 
+	public static void RideBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "action")
+		{
+			Debug.Log("Ride Button Clikced");
+			// Tile tile = GridManager.GetTile(instance.selectedUnit.transform.position);
+			// if (tile.isBuilding)
+			// {
+			// 	Building building = (Building)tile;
+			// 	building.Capture(instance.selectedUnit);
+			// 	instance.selectedUnit.Deactivate();
+			// 	ExitState("action");
+			// 	instance.states.Clear();
+			// 	EnterState("base");	
+			// }
+		}
+	}
+
+	public static void DropBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "action")
+		{
+			Debug.Log("Drop Button Clikced");
+			// Tile tile = GridManager.GetTile(instance.selectedUnit.transform.position);
+			// if (tile.isBuilding)
+			// {
+			// 	Building building = (Building)tile;
+			// 	building.Capture(instance.selectedUnit);
+			// 	instance.selectedUnit.Deactivate();
+			// 	ExitState("action");
+			// 	instance.states.Clear();
+			// 	EnterState("base");	
+			// }
+		}
+	}
+
 	public static void WaitBtnClicked()
 	{
 		if (CanReceiveInput() && CurrentState() == "action")
@@ -166,6 +238,7 @@ public class InputManager : MonoBehaviour {
 	// from target state
 	public static void AttackHighlightClicked(Vector2 position)
 	{
+		Debug.Log("Attack Highlight Clicked");
 		if (CanReceiveInput() && CurrentState() == "target")
 		{
 			GridManager.CalculateAttack(instance.selectedUnit, GridManager.GetUnit(position));
@@ -211,6 +284,11 @@ public class InputManager : MonoBehaviour {
 			EnterState("base");
 			BattleManager.StartTurn();
 			instance.uiManager.UpdateFundsDisplay();
+			if (BattleManager.GetCurrentPlayerType() == PlayerType.computer)
+			{
+				SetReceiveInput(false);
+				ComputerOpponent.Run();
+			}
 		}
 	}
 
@@ -223,9 +301,10 @@ public class InputManager : MonoBehaviour {
 		} else if (newState == "action") {
 			List<Vector2> coords = Pather.GetCoordsToMoveHighlight(instance.selectedUnit);
 			bool canCapture = GridManager.CanUnitCapture(instance.selectedUnit);
-			instance.uiManager.ShowActionUI(coords, canCapture);
+			instance.uiManager.ShowActionUI(coords, canCapture, CanUseAttackAction(), false, false);
 		} else if (newState == "target") {
 			List<Vector2> coords = GridManager.GetCoordsToAttackHighlight(instance.selectedUnit);
+			GridManager.ShowDamageLabels(coords, instance.selectedUnit);
 			instance.uiManager.ShowTargetUI(coords);
 		} else if (newState == "confirm") {
 			instance.uiManager.ShowConfirmUI();
@@ -246,6 +325,7 @@ public class InputManager : MonoBehaviour {
 		} else if (oldState == "action") {
 			instance.uiManager.HideActionUI();
 		} else if (oldState == "target") {
+			GridManager.HideDamageLabels();
 			instance.uiManager.HideTargetUI();
 		} else if (oldState == "confirm") {
 			instance.uiManager.HideConfirmUI();
