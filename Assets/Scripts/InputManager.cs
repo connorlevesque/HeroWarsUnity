@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour {
 	private static InputManager instance;
 
 	private UIManager uiManager;
+	private ComputerOpponent computerOpponent;
 	private Stack<string> states = new Stack<string>();
 	private Unit selectedUnit;
 	private GameObject selectedPrefab;
@@ -21,6 +22,7 @@ public class InputManager : MonoBehaviour {
 	void Start()
 	{
 		uiManager = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+		computerOpponent = GetComponent<ComputerOpponent>();
 	}
 
 	public static bool CanReceiveInput()
@@ -87,7 +89,9 @@ public class InputManager : MonoBehaviour {
 				Vector2 position = instance.selectedUnit.transform.position;
 				if (position != Pather.center)
 				{
-					GridManager.MoveUnit(position, Pather.center);
+					GridManager.MoveUnit(position, Pather.center, 
+						() => { InputManager.CheckActions();
+								InputManager.SetReceiveInput(true);});
 					EnterState("action");
 				} else {
 					ExitState(instance.states.Pop());
@@ -124,7 +128,9 @@ public class InputManager : MonoBehaviour {
 		{
 			List<Vector2> path = Pather.GetPathToPoint(position);
 			SetReceiveInput(false);
-			GridManager.MoveUnitAlongPath(instance.selectedUnit, position, path);
+			GridManager.MoveUnitAlongPath(instance.selectedUnit, position, path, 
+				() => { InputManager.CheckActions();
+						InputManager.SetReceiveInput(true);});
 			instance.uiManager.RemoveHighlights();
 		}
 	}
@@ -277,18 +283,38 @@ public class InputManager : MonoBehaviour {
 		if (CanReceiveInput() && CurrentState() == "gameMenu")
 		{
 			ExitState("gameMenu");
-			GridManager.ActivateUnits();
-			GridManager.RefreshControlPoints();
-			BattleManager.EndTurn();
-			instance.states.Clear();
+			EndTurn();
 			EnterState("base");
-			BattleManager.StartTurn();
-			instance.uiManager.UpdateFundsDisplay();
-			if (BattleManager.GetCurrentPlayerType() == PlayerType.computer)
-			{
-				SetReceiveInput(false);
-				ComputerOpponent.Run();
-			}
+			StartTurn();
+		}
+	}
+
+	public static void ChangeTurns()
+	{
+		ExitState("gameMenu");
+		EndTurn();
+		EnterState("base");
+		StartTurn();
+	}
+
+	public static void EndTurn()
+	{
+		GridManager.ActivateUnits();
+		GridManager.RefreshControlPoints();
+		BattleManager.EndTurn();
+		instance.states.Clear();
+	}
+
+	public static void StartTurn()
+	{
+		BattleManager.StartTurn();
+		instance.uiManager.UpdateFundsDisplay();
+		if (BattleManager.GetCurrentPlayerType() == PlayerType.computer)
+		{
+			SetReceiveInput(false);
+			instance.StartCoroutine(instance.computerOpponent.Run());
+		} else if (BattleManager.GetCurrentPlayerType() == PlayerType.local) {
+			SetReceiveInput(true);
 		}
 	}
 

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -110,7 +111,13 @@ public class GridManager : MonoBehaviour {
 
 	// unit accessors
 	public static Unit GetUnit(Vector2 position) {
-		return instance.units[position];
+		if (instance.units.ContainsKey(position))
+		{
+			return instance.units[position];
+		} else {
+			return null;
+		}
+		
 	}
 
 	public static Dictionary<Vector2,Unit> GetUnits() {
@@ -195,12 +202,14 @@ public class GridManager : MonoBehaviour {
 		instance.units.Add(position, unitPrefab.GetComponent<Unit>());
 	}
 
-	public static void MoveUnitAlongPath(Unit unit, Vector2 destination, List<Vector2> path)
+	public delegate void MoveUnitCompleted();
+
+	public static void MoveUnitAlongPath(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
 	{
-		instance.StartCoroutine(MoveUnitAlongPathCoroutine(unit, destination, path));
+		instance.StartCoroutine(MoveUnitAlongPathCoroutine(unit, destination, path, callBack));
 	}
 
-	private static IEnumerator MoveUnitAlongPathCoroutine(Unit unit, Vector2 destination, List<Vector2> path)
+	private static IEnumerator MoveUnitAlongPathCoroutine(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
 	{
 		Vector2 startPosition = unit.transform.position;
 		foreach (Vector2 direction in path)
@@ -211,17 +220,16 @@ public class GridManager : MonoBehaviour {
 				yield return new WaitForSeconds(.05f / frames);
 			}
 		}
-		MoveUnit(startPosition, destination);
-		InputManager.SetReceiveInput(true);
+		MoveUnit(startPosition, destination, callBack);
 	}
 
-	public static void MoveUnit(Vector2 a, Vector2 b)
+	public static void MoveUnit(Vector2 a, Vector2 b, MoveUnitCompleted callBack)
 	{
 		Unit unit = GetUnit(a);
 		instance.units.Remove(a);
 		instance.units.Add(b,unit);
 		unit.transform.position = b;
-		InputManager.CheckActions();
+		callBack();
 	}
 
 	public static void ActivateUnits()

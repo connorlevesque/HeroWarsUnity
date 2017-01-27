@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 
 public enum UnitType { footman, archer, scout, catapult, knight, guard, bombard, greatKnight };
-public enum UnitGroup { infantry, cavalry, artillery, flying }
+public enum UnitGroup { infantry, cavalry, artillery, flying };
+public enum Behaviour { none, hold, defend };
 
 public class Unit : MonoBehaviour {
 
@@ -36,7 +37,8 @@ public class Unit : MonoBehaviour {
 	private GameObject damageLabel;
 	private Text damageText;
 	// AI properties
-	private float powerConstant = 1;
+	public float powerConstant = 1;
+	public Behaviour behaviour = Behaviour.none;
 
 	void Awake()
 	{
