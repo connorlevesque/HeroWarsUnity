@@ -48,7 +48,6 @@ public class InputManager : MonoBehaviour {
 
 	public static void UnitClicked(Unit unit)
 	{
-		Debug.Log("Unit Clicked");
 		if (CanReceiveInput() && CurrentState() == "base")
 		{
 			if (unit.owner == BattleManager.GetCurrentPlayerIndex() && unit.activated)
@@ -244,7 +243,6 @@ public class InputManager : MonoBehaviour {
 	// from target state
 	public static void AttackHighlightClicked(Vector2 position)
 	{
-		Debug.Log("Attack Highlight Clicked");
 		if (CanReceiveInput() && CurrentState() == "target")
 		{
 			GridManager.CalculateAttack(instance.selectedUnit, GridManager.GetUnit(position));

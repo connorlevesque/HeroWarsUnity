@@ -48,25 +48,37 @@ public class ComputerOpponent : MonoBehaviour {
 		foreach (Unit unit in units)
 		{
 			Vector2 moveGoal = ChooseMoveGoal();
-			int[,] distanceMap = Pather.GetDistanceMap(unit, moveGoal);
-			int bestDistance = 1000;
+			int[,,] distanceMap = Pather.GetDistanceMap(unit, moveGoal);
+			int[] bestDistance = new int[2] { 1000, 1000 };
 			List<Vector2> candidateMoves = new List<Vector2>();
-			foreach (Vector2 movePosition in Pather.GetCoordsToMoveHighlight(unit))
+			foreach (Vector2 movePosition in GetMovePositions(unit, false))
 			{
 				if (Influence.oneTurnInfluenceMap[(int)movePosition.x,(int)movePosition.y] >= 0)
 				{
-					if (distanceMap[(int)movePosition.x,(int)movePosition.y] < bestDistance)
+					if (distanceMap[(int)movePosition.x,(int)movePosition.y,0] < bestDistance[0])
 					{
-						bestDistance = distanceMap[(int)movePosition.x,(int)movePosition.y];
+						bestDistance[0] = distanceMap[(int)movePosition.x,(int)movePosition.y,0];
+						bestDistance[1] = distanceMap[(int)movePosition.x,(int)movePosition.y,1];
 						candidateMoves.Clear();
 						candidateMoves.Add(movePosition);
-					} else if (distanceMap[(int)movePosition.x,(int)movePosition.y] == bestDistance) {
-						candidateMoves.Add(movePosition);
+					} else if (distanceMap[(int)movePosition.x,(int)movePosition.y,0] == bestDistance[0]) {
+						if (distanceMap[(int)movePosition.x,(int)movePosition.y,1] < bestDistance[1])
+						{
+							bestDistance[0] = distanceMap[(int)movePosition.x,(int)movePosition.y,0];
+							bestDistance[1] = distanceMap[(int)movePosition.x,(int)movePosition.y,1];
+							candidateMoves.Clear();
+							candidateMoves.Add(movePosition);
+						} else if (distanceMap[(int)movePosition.x,(int)movePosition.y,1] == bestDistance[1]) {
+							candidateMoves.Add(movePosition);
+						}
 					}
 				}
 			}
 			int r = (int)Math.Floor(UnityEngine.Random.Range(0f,(float)(candidateMoves.Count - 1)));
 			Vector2 finalMove = candidateMoves[r];
+			Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
+				unit.transform.position.x.ToString(), unit.transform.position.y.ToString(), 
+				finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
 			moving = true;
 			GridManager.MoveUnitAlongPath(unit, finalMove, Pather.GetPathToPoint(finalMove), () => { 
 				moving = false;
@@ -94,7 +106,7 @@ public class ComputerOpponent : MonoBehaviour {
 			Unit target = ChooseTarget(unit, ref attackPosition);
 			if (target)
 			{
-				Debug.LogFormat("{0} {1} will attack {2} {3}", unit.type.ToString(), 
+				Debug.LogFormat("{0} {1} attacks {2} {3}", unit.type.ToString(), 
 					unit.owner.ToString(), target.type.ToString(), target.owner.ToString());
 				moving = true;
 				GridManager.MoveUnitAlongPath(unit, attackPosition, Pather.GetPathToPoint(attackPosition), () => { 

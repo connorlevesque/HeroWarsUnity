@@ -116,7 +116,6 @@ public class UIManager : MonoBehaviour {
 
 	public void ToggleCaptureBtn(bool turnOn)
 	{
-		Debug.LogFormat("ToggleCaptureBtn = {0}", turnOn);
 		captureBtn.SetActive(turnOn);
 		waitBtn.SetActive(!turnOn);
 	}

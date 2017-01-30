@@ -135,17 +135,19 @@ public class Pather {
 		return path;
 	}
 
-	public static int[,] GetDistanceMap(Unit unit, Vector2 destination)
+	public static int[,,] GetDistanceMap(Unit unit, Vector2 destination)
 	{
-		int[,] distanceMap = new int[GridManager.Width(),GridManager.Height()];
+		int[,,] distanceMap = new int[GridManager.Width(),GridManager.Height(),2];
 		for (int x = 0; x < distanceMap.GetLength(0); x++)
 		{
 			for (int y = 0; y < distanceMap.GetLength(1); y++)
 			{
-				distanceMap[x,y] = 1000;
+				distanceMap[x,y,0] = 1000;
+				distanceMap[x,y,1] = 1000;
 			}
 		}
-		distanceMap[(int)destination.x,(int)destination.y] = 0;
+		distanceMap[(int)destination.x,(int)destination.y,0] = 0;
+		distanceMap[(int)destination.x,(int)destination.y,1] = 0;
 		Pather.SetUpNodes(destination, unit.grouping);
 		List<Vector2> positionsToCheck = Pather.GetMoveCoordsForFloodFill(destination, unit.movePoints);
 		int turnsAway = 1;
@@ -158,9 +160,13 @@ public class Pather {
 				List<Vector2> movePositions = Pather.GetMoveCoordsForFloodFill(positionToCheck, unit.movePoints);
 				foreach (Vector2 movePosition in movePositions)
 				{
-					if (turnsAway < distanceMap[(int)movePosition.x,(int)movePosition.y])
+					int pathCost = nodes[(int)movePosition.x,(int)movePosition.y].pathCost;
+					if (turnsAway < distanceMap[(int)movePosition.x,(int)movePosition.y,0] || 
+					   (turnsAway == distanceMap[(int)movePosition.x,(int)movePosition.y,0] && 
+					   	pathCost < distanceMap[(int)movePosition.x,(int)movePosition.y,1]))
 					{
-						distanceMap[(int)movePosition.x,(int)movePosition.y] = turnsAway;
+						distanceMap[(int)movePosition.x,(int)movePosition.y,0] = turnsAway;
+						distanceMap[(int)movePosition.x,(int)movePosition.y,1] = pathCost;
 						addList.Add(movePosition);
 					}
 				}
