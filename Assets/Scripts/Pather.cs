@@ -134,6 +134,46 @@ public class Pather {
 		}
 		return path;
 	}
+
+	public static int[,] GetDistanceMap(Unit unit, Vector2 destination)
+	{
+		int[,] distanceMap = new int[GridManager.Width(),GridManager.Height()];
+		for (int x = 0; x < distanceMap.GetLength(0); x++)
+		{
+			for (int y = 0; y < distanceMap.GetLength(1); y++)
+			{
+				distanceMap[x,y] = 1000;
+			}
+		}
+		distanceMap[(int)destination.x,(int)destination.y] = 0;
+		Pather.SetUpNodes(destination, unit.grouping);
+		List<Vector2> positionsToCheck = Pather.GetMoveCoordsForFloodFill(destination, unit.movePoints);
+		int turnsAway = 1;
+		while (positionsToCheck.Count > 0)
+		{
+			List<Vector2> addList = new List<Vector2>();
+			foreach (Vector2 positionToCheck in positionsToCheck)
+			{
+				Pather.SetUpNodes(positionToCheck, unit.grouping);
+				List<Vector2> movePositions = Pather.GetMoveCoordsForFloodFill(positionToCheck, unit.movePoints);
+				foreach (Vector2 movePosition in movePositions)
+				{
+					if (turnsAway < distanceMap[(int)movePosition.x,(int)movePosition.y])
+					{
+						distanceMap[(int)movePosition.x,(int)movePosition.y] = turnsAway;
+						addList.Add(movePosition);
+					}
+				}
+			}
+			positionsToCheck.Clear();
+			foreach (Vector2 addVector in addList)
+			{
+				positionsToCheck.Add(addVector);
+			}
+			turnsAway++;
+		}
+		return distanceMap;
+	}
 }
 
 

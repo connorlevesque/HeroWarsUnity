@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -36,38 +37,53 @@ public class ComputerOpponent : MonoBehaviour {
 	public IEnumerator CheckMoves()
 	{
 		Influence.SetUpMaps();
-		Debug.Log("Influence:");
-		Influence.LogMap(Influence.influenceMap);
-		Debug.Log("Tension:");
-		Influence.LogMap(Influence.tensionMap);
-		// foreach (Unit unit in units)
-		// {
-		// 	Vector2 moveGoal = ChooseMovePosition();
-		// 	// if (target)
-		// 	// {
-		// 	// 	Debug.LogFormat("{0} {1} will attack {2} {3}", unit.type.ToString(), 
-		// 	// 		unit.owner.ToString(), target.type.ToString(), target.owner.ToString());
-		// 	// 	moving = true;
-		// 	// 	GridManager.MoveUnitAlongPath(unit, attackPosition, Pather.GetPathToPoint(movePosition), () => { 
-		// 	// 		moving = false;
-		// 	// 	});
-		// 	// 	while (moving) {
-		// 	// 		yield return new WaitForSeconds(.1f);
-		// 	// 	}
-		// 	// }
-		// }
-		moving = false;
-		while (moving) {
-			yield return new WaitForSeconds(.1f);
+		// Debug.Log("Influence:");
+		// Influence.LogMap(Influence.influenceMap);
+		// Debug.Log("One Turn Influence:");
+		// Influence.LogMap(Influence.oneTurnInfluenceMap);
+		// Debug.Log("Tension:");
+		// Influence.LogMap(Influence.tensionMap);
+		// Debug.Log("Tension points:");
+		// Influence.LogTensionPoints();
+		foreach (Unit unit in units)
+		{
+			Vector2 moveGoal = ChooseMoveGoal();
+			int[,] distanceMap = Pather.GetDistanceMap(unit, moveGoal);
+			int bestDistance = 1000;
+			List<Vector2> candidateMoves = new List<Vector2>();
+			foreach (Vector2 movePosition in Pather.GetCoordsToMoveHighlight(unit))
+			{
+				if (Influence.oneTurnInfluenceMap[(int)movePosition.x,(int)movePosition.y] >= 0)
+				{
+					if (distanceMap[(int)movePosition.x,(int)movePosition.y] < bestDistance)
+					{
+						bestDistance = distanceMap[(int)movePosition.x,(int)movePosition.y];
+						candidateMoves.Clear();
+						candidateMoves.Add(movePosition);
+					} else if (distanceMap[(int)movePosition.x,(int)movePosition.y] == bestDistance) {
+						candidateMoves.Add(movePosition);
+					}
+				}
+			}
+			int r = (int)Math.Floor(UnityEngine.Random.Range(0f,(float)(candidateMoves.Count - 1)));
+			Vector2 finalMove = candidateMoves[r];
+			moving = true;
+			GridManager.MoveUnitAlongPath(unit, finalMove, Pather.GetPathToPoint(finalMove), () => { 
+				moving = false;
+			});
+			while (moving) {
+				yield return new WaitForSeconds(.1f);
+			}
 		}
-		RemoveUsedUnits();
 		inSubCoroutine = false;
 	}
 
-	// public Vector2 ChooseMovePosition()
-	// {
-
-	// }
+	public Vector2 ChooseMoveGoal()
+	{
+		int r = UnityEngine.Random.Range(0,Influence.maxTensionPoints.Count - 1);
+		Vector2 moveGoal = Influence.maxTensionPoints[r];
+		return moveGoal;
+	}
 
 	public IEnumerator CheckAttacks()
 	{
