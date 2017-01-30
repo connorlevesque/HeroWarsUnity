@@ -81,14 +81,14 @@ public class GridManager : MonoBehaviour {
 		return buildings;
 	}
 
-	public static List<Vector2> GetCoordsToAttackHighlight(Unit attackingUnit)
+	public static List<Vector2> GetCoordsToAttackHighlight(Vector2 position, int[] range)
 	{
 		List<Vector2> coords = new List<Vector2>();
 		for (int x = 0; x < Width(); x++) {
 			for (int y = 0; y < Height(); y++) {
-				int dx = (int)Mathf.Abs(attackingUnit.transform.position.x - x);
-				int dy = (int)Mathf.Abs(attackingUnit.transform.position.y - y);
-				if (attackingUnit.range[0] <= dx + dy && dx + dy <= attackingUnit.range[1])
+				int dx = (int)Mathf.Abs(position.x - x);
+				int dy = (int)Mathf.Abs(position.y - y);
+				if (range[0] <= dx + dy && dx + dy <= range[1])
 				{
 					coords.Add(new Vector2(x,y));
 				}

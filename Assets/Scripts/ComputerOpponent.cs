@@ -8,21 +8,70 @@ public class ComputerOpponent : MonoBehaviour {
 	private List<Unit> unitsToRemove = new List<Unit>();
 	private bool inSubCoroutine = false;
 	private bool moving = false;
+	private bool attackFound = false;
 
 	public IEnumerator Run()
 	{
 		Debug.Log("Running ComputerOpponent");
+		// check for attacks
 		OrderUnitList(false);
 		inSubCoroutine = true;
-		StartCoroutine(CheckAttacks());
+		do {
+			StartCoroutine(CheckAttacks());
+			while (inSubCoroutine) {
+				yield return new WaitForSeconds(.1f);
+			}
+		} while (attackFound);
+		// check for moves
+		OrderUnitList(true);
+		inSubCoroutine = true;
+		StartCoroutine(CheckMoves());
 		while (inSubCoroutine) {
 			yield return new WaitForSeconds(.1f);
 		}
+		// cleanup
 		InputManager.ChangeTurns();
 	}
 
+	public IEnumerator CheckMoves()
+	{
+		Influence.SetUpMaps();
+		Debug.Log("Influence:");
+		Influence.LogMap(Influence.influenceMap);
+		Debug.Log("Tension:");
+		Influence.LogMap(Influence.tensionMap);
+		// foreach (Unit unit in units)
+		// {
+		// 	Vector2 moveGoal = ChooseMovePosition();
+		// 	// if (target)
+		// 	// {
+		// 	// 	Debug.LogFormat("{0} {1} will attack {2} {3}", unit.type.ToString(), 
+		// 	// 		unit.owner.ToString(), target.type.ToString(), target.owner.ToString());
+		// 	// 	moving = true;
+		// 	// 	GridManager.MoveUnitAlongPath(unit, attackPosition, Pather.GetPathToPoint(movePosition), () => { 
+		// 	// 		moving = false;
+		// 	// 	});
+		// 	// 	while (moving) {
+		// 	// 		yield return new WaitForSeconds(.1f);
+		// 	// 	}
+		// 	// }
+		// }
+		moving = false;
+		while (moving) {
+			yield return new WaitForSeconds(.1f);
+		}
+		RemoveUsedUnits();
+		inSubCoroutine = false;
+	}
+
+	// public Vector2 ChooseMovePosition()
+	// {
+
+	// }
+
 	public IEnumerator CheckAttacks()
 	{
+		attackFound = false;
 		foreach (Unit unit in units)
 		{
 			Vector2 attackPosition = new Vector2();
@@ -39,10 +88,10 @@ public class ComputerOpponent : MonoBehaviour {
 					yield return new WaitForSeconds(.1f);
 				}
 				CompleteAttack(unit, target);
+				attackFound = true;
 			}
 		}
 		RemoveUsedUnits();
-		LogUnitList();
 		inSubCoroutine = false;
 	}
 
@@ -72,7 +121,7 @@ public class ComputerOpponent : MonoBehaviour {
 		foreach (Vector2 position in GetMovePositions(unit, true))
 		{
 			GridManager.MoveUnit(startingPosition, position, () => {});
-			foreach (Vector2 targetPosition in GridManager.GetCoordsToAttackHighlight(unit))
+			foreach (Vector2 targetPosition in GridManager.GetCoordsToAttackHighlight(unit.transform.position, unit.range))
 			{
 				Unit target = GridManager.GetUnit(targetPosition);
 				if (target)

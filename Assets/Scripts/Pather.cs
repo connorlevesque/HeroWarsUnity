@@ -18,13 +18,13 @@ public class Pather {
 	public static List<Vector2> GetCoordsToMoveHighlight(Unit u)
 	{
 		unit = u;
-		center = unit.transform.position;
-		SetUpNodes();
-		return GetMovableCoordsFromNodes();
+		SetUpNodes(unit.transform.position, unit.grouping);
+		return GetMoveCoordsFromNodes();
 	}
 
-	public static void SetUpNodes()
+	public static void SetUpNodes(Vector2 c, UnitGroup grouping)
 	{
+		center = c;
 		Tile[,] tiles = GridManager.GetTiles();
 		Dictionary<Vector2,Unit> enemyUnits = GridManager.GetEnemyUnits();
 		nodes = new Node[ GridManager.Width(), GridManager.Height() ];
@@ -38,7 +38,7 @@ public class Pather {
 				{
 					moveCost = -1;
 				} else {
-					moveCost = tiles[x,y].moveCosts[(int)unit.grouping];
+					moveCost = tiles[x,y].moveCosts[(int)grouping];
 				}
 				nodes[x,y] = new Node(position, moveCost);
 			}
@@ -46,7 +46,7 @@ public class Pather {
 		nodes[(int)center.x,(int)center.y].pathCost = 0;
 	}
 
-	public static List<Vector2> GetMovableCoordsFromNodes()
+	public static List<Vector2> GetMoveCoordsFromNodes()
 	{
 		List<Vector2> coords = new List<Vector2>();
 		Dictionary<Vector2,Unit> friendlyUnits = GridManager.GetFriendlyUnits();
@@ -65,6 +65,38 @@ public class Pather {
 					{
 						int newPathCost = u.pathCost + v.moveCost;
 						if (newPathCost < v.pathCost && newPathCost <= unit.movePoints)
+						{
+							v.pathCost = newPathCost;
+							v.trace = direction;
+							if (!coords.Contains(v.position) && !friendlyUnits.ContainsKey(v.position)) coords.Add(v.position);
+							queue.Enqueue(v);
+						}
+					}
+				}
+			}
+		}
+		return coords;
+	}
+
+	public static List<Vector2> GetMoveCoordsForFloodFill(Vector2 position, int movePoints)
+	{
+		List<Vector2> coords = new List<Vector2>();
+		Dictionary<Vector2,Unit> friendlyUnits = GridManager.GetFriendlyUnits();
+		queue.Enqueue(nodes[(int)position.x,(int)position.y]);
+		while (queue.Count > 0)
+		{
+			Node u = queue.Dequeue();
+			foreach (Vector2 direction in directions)
+			{
+				int vx = (int)(u.position.x + direction.x);
+				int vy = (int)(u.position.y + direction.y);
+				if (NodeInBounds(vx,vy))
+				{
+					Node v = nodes[vx, vy];
+					if (v.moveCost > 0)
+					{
+						int newPathCost = u.pathCost + v.moveCost;
+						if (newPathCost < v.pathCost && newPathCost <= movePoints)
 						{
 							v.pathCost = newPathCost;
 							v.trace = direction;

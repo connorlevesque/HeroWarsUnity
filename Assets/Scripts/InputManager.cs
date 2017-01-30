@@ -329,7 +329,8 @@ public class InputManager : MonoBehaviour {
 			bool canCapture = GridManager.CanUnitCapture(instance.selectedUnit);
 			instance.uiManager.ShowActionUI(coords, canCapture, CanUseAttackAction(), false, false);
 		} else if (newState == "target") {
-			List<Vector2> coords = GridManager.GetCoordsToAttackHighlight(instance.selectedUnit);
+			List<Vector2> coords = GridManager.GetCoordsToAttackHighlight(instance.selectedUnit.transform.position, 
+																		  instance.selectedUnit.range);
 			GridManager.ShowDamageLabels(coords, instance.selectedUnit);
 			instance.uiManager.ShowTargetUI(coords);
 		} else if (newState == "confirm") {
