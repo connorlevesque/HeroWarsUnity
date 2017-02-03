@@ -504,15 +504,20 @@ public class InputManager : MonoBehaviour {
 	public static List<Vector2> GetRangeStateCoords(Unit unit)
 	{
 		List<Vector2> coords = new List<Vector2>();
-		List<Vector2> movePositions = Pather.GetCoordsToMoveHighlight(unit);
- 		foreach (Vector2 movePosition in movePositions)
- 		{
-			foreach (Vector2 attackPosition in GridManager.GetCoordsToAttackHighlight(movePosition, unit.range))
-			{
-				if (!coords.Contains(attackPosition)) coords.Add(attackPosition);
+		if (unit.grouping == UnitGroup.artillery)
+		{
+			return GridManager.GetCoordsToAttackHighlight(unit.transform.position, unit.range);
+		} else {
+			List<Vector2> movePositions = Pather.GetCoordsToMoveHighlight(unit);
+	 		foreach (Vector2 movePosition in movePositions)
+	 		{
+				foreach (Vector2 attackPosition in GridManager.GetCoordsToAttackHighlight(movePosition, unit.range))
+				{
+					if (!coords.Contains(attackPosition)) coords.Add(attackPosition);
+				}
 			}
+			return coords;
 		}
-		return coords;
 	}
 
 	// state accessor

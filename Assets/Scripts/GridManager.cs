@@ -295,6 +295,7 @@ public class GridManager : MonoBehaviour {
 
 	public static void MoveUnit(Vector2 a, Vector2 b, MoveUnitCompleted callBack)
 	{
+		Debug.LogFormat("vector b = ({0},{1})", b.x, b.y);
 		Unit unit = GetUnit(a);
 		instance.units.Remove(a);
 		instance.units.Add(b,unit);

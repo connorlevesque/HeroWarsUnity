@@ -125,6 +125,9 @@ public class ComputerOpponent : MonoBehaviour {
 			List<Vector2> candidateMoves = new List<Vector2>();
 			foreach (Vector2 movePosition in Pather.GetAIMovePositions(unit, false))
 			{
+				if (movePosition != GridManager.GetCastleLocationForOwner((BattleManager.GetCurrentPlayerIndex() + 1) % 2) ||
+					unit.behaviour == Behaviour.capture)
+				{
 				// if (InfluenceTwo.oneTurnInfluenceMap[(int)movePosition.x,(int)movePosition.y] <= safeInfluence)
 				// {
 					if (distanceMap[(int)movePosition.x,(int)movePosition.y,0] < bestDistance[0])
@@ -145,6 +148,7 @@ public class ComputerOpponent : MonoBehaviour {
 						}
 					}
 				// }
+				}
 			}
 			int r = UnityEngine.Random.Range(0,candidateMoves.Count);
 			Vector2 finalMove = candidateMoves[r];
