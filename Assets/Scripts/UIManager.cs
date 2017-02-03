@@ -17,6 +17,14 @@ public class UIManager : MonoBehaviour {
 	public GameObject endTurnBtn;
 	public GameObject fundsDisplay;
 	public ProductionMenu productionMenu;
+	public GameObject saveBtn;
+	public GameObject restartBtn;
+	public GameObject quitBtn;
+	public GameObject confirmMenu;
+	public GameObject yesBtn;
+	public GameObject noBtn;
+	public GameObject okayMenu;
+	public GameObject okayBtn;
 	// Highlights
 	private List<GameObject> highlights = new List<GameObject>();
 	public GameObject highlightBlue;
@@ -39,6 +47,13 @@ public class UIManager : MonoBehaviour {
 		dropBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.DropBtnClicked());
 		waitBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.WaitBtnClicked());
 		endTurnBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.EndTurnBtnClicked());
+		// gameMenu buttons
+		saveBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.SaveBtnClicked());
+		restartBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.RestartBtnClicked());
+		quitBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.QuitBtnClicked());
+		yesBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.YesBtnClicked());
+		noBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.NoBtnClicked());
+		okayBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.OkayBtnClicked());
 	}
 
 	// UI helper methods
@@ -159,20 +174,20 @@ public class UIManager : MonoBehaviour {
 
 	}
 
-	// range
-	public void ShowRangeUI()
+	public void HideConfirmUI()
 	{
+		
+	}
 
+	// range
+	public void ShowRangeUI(List<Vector2> highlightCoords)
+	{
+		Highlight(highlightCoords, "red");
 	}
 
 	public void HideRangeUI()
 	{
-		
-	}
-
-	public void HideConfirmUI()
-	{
-		
+		RemoveHighlights();
 	}
 
 	// Production
@@ -191,11 +206,39 @@ public class UIManager : MonoBehaviour {
 	public void ShowGameMenuUI()
 	{
 		endTurnBtn.SetActive(true);
+		//saveBtn.SetActive(true);
+		restartBtn.SetActive(true);
+		quitBtn.SetActive(true);
 	}
 
 	public void HideGameMenuUI()
 	{
 		endTurnBtn.SetActive(false);
+		//saveBtn.SetActive(false);
+		restartBtn.SetActive(false);
+		quitBtn.SetActive(false);
+	}
+
+	public void ShowChangeSceneUI(string message)
+	{
+		confirmMenu.transform.GetChild(1).GetComponent<Text>().text = message;
+		confirmMenu.SetActive(true);
+	}
+
+	public void HideChangeSceneUI()
+	{
+		confirmMenu.SetActive(false);
+	}
+
+	public void ShowWinLoseUI(string message)
+	{
+		okayMenu.transform.GetChild(1).GetComponent<Text>().text = message;
+		okayMenu.SetActive(true);
+	}
+
+	public void HideWinLoseUI()
+	{
+		okayMenu.SetActive(false);
 	}
 
 }

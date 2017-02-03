@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class Building : Tile {
@@ -20,13 +21,17 @@ public class Building : Tile {
 		controlText = transform.GetChild(0).GetChild(1).GetComponent<Text>();
 	}
 
-	void OnMouseDown() 
+	void OnMouseUpAsButton() 
 	{
-		InputManager.BuildingClicked(this);
+		if (!InputManager.IsPointerOverUIButton())
+		{
+			InputManager.BuildingClicked(this);
+		}
 	}
 
 	public void Capture(Unit unit)
 	{
+		int temp = owner;
 		controlPoints -= unit.HealthInt();
 		controlText.text = controlPoints.ToString();
 		if (controlPoints <= 0)
@@ -41,6 +46,10 @@ public class Building : Tile {
 			canvas.SetActive(false);
 		}
 		GridManager.UpdateBuilding(this);
+		if (type == TileType.castle)
+		{
+			CheckIfLastCastle(temp);
+		}
 	}
 
 	public void RefreshControlPoints()
@@ -48,5 +57,18 @@ public class Building : Tile {
 		controlPoints = 20;
 		canvas.SetActive(false);
 		GridManager.UpdateBuilding(this);
+	}
+
+	public void CheckIfLastCastle(int owner)
+	{
+		if (GridManager.GetCastleLocationForOwner(owner) == new Vector2(-100,-100))
+		{
+			if (owner == 1)
+			{
+				InputManager.WinLoseLevel("lose");
+			} else if (owner == 2) {
+				InputManager.WinLoseLevel("win");
+			}
+		}
 	}
 }

@@ -3,20 +3,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Influence {
+public class InfluenceTwo {
 
 	public static float[,] influenceMap;
 	public static float[,] oneTurnInfluenceMap;
-	public static float[,] tensionMap;
-	public static List<Vector2> maxTensionPoints = new List<Vector2>();
-	public static float maxTension = 1f;
+	public static float[,] enemyOneTurnInfluenceMap;
+	public static List<Vector2> maxEnemyOneTurnInfluencePoints = new List<Vector2>();
 
 	public static void SetUpMaps()
 	{
 		influenceMap = new float[GridManager.Width(),GridManager.Height()];
 		oneTurnInfluenceMap = new float[GridManager.Width(),GridManager.Height()];
-		tensionMap = new float[GridManager.Width(),GridManager.Height()];
-		maxTensionPoints.Clear();
+		enemyOneTurnInfluenceMap = new float[GridManager.Width(),GridManager.Height()];
+		Vector2 castleLocation = GridManager.GetCastleLocationForOwner((BattleManager.GetCurrentPlayerIndex() + 1) % 2);
+		if (castleLocation != new Vector2(-100,-100))
+		{
+			enemyOneTurnInfluenceMap[(int)castleLocation.x,(int)castleLocation.y] += 50;
+		}	
 		Dictionary<Vector2,Unit> units = GridManager.GetUnits();
 		foreach (Unit unit in units.Values)
 		{
@@ -28,30 +31,32 @@ public class Influence {
 				{
 					float influence = unitInfluenceMap[x,y];
 					float oneTurnInfluence = oneTurnUnitInfluence[x,y];
-					if (tensionMap[x,y] == 0) tensionMap[x,y] = 1;
-					tensionMap[x,y] *= influence;
+					float enemyOneTurnInfluence = oneTurnUnitInfluence[x,y];
 					if (unit.owner != BattleManager.GetCurrentPlayerIndex()) 
 					{
 						influence *= -1;
 						oneTurnInfluence *= -1;
+					} else {
+						enemyOneTurnInfluence = 0;
 					}
 					influenceMap[x,y] += influence;
 					oneTurnInfluenceMap[x,y] += oneTurnInfluence;
+					enemyOneTurnInfluenceMap[x,y] += enemyOneTurnInfluence;
 				}
 			}
 		}
-		maxTension = 1f;
-		for (int x = 0; x < tensionMap.GetLength(0); x++)
+		float maxEnemyOneTurnInfluence = 0;
+		for (int x = 0; x < enemyOneTurnInfluenceMap.GetLength(0); x++)
 		{
-			for (int y = 0; y < tensionMap.GetLength(1); y++)
+			for (int y = 0; y < enemyOneTurnInfluenceMap.GetLength(1); y++)
 			{
-				if (tensionMap[x,y] > maxTension)
+				if (enemyOneTurnInfluenceMap[x,y] > maxEnemyOneTurnInfluence)
 				{
-					maxTension = tensionMap[x,y];
-					maxTensionPoints.Clear();
-					maxTensionPoints.Add(new Vector2((float)x,(float)y));
-				} else if (tensionMap[x,y] == maxTension) {
-					maxTensionPoints.Add(new Vector2((float)x,(float)y));
+					maxEnemyOneTurnInfluence = enemyOneTurnInfluenceMap[x,y];
+					maxEnemyOneTurnInfluencePoints.Clear();
+					maxEnemyOneTurnInfluencePoints.Add(new Vector2(x,y));
+				} else if (enemyOneTurnInfluenceMap[x,y] == maxEnemyOneTurnInfluence) {
+					maxEnemyOneTurnInfluencePoints.Add(new Vector2(x,y));
 				}
 			}
 		}
@@ -120,17 +125,7 @@ public class Influence {
 		return unitInfluenceMap;
 	}
 
-	public static void LogTensionPoints()
-	{
-		string str = "";
-		foreach (Vector2 tensionPoint in maxTensionPoints)
-		{
-			str += "(" + tensionPoint.x.ToString() + "," + tensionPoint.y.ToString() + ") ";
-		}
-		Debug.Log(str);
-	}
-
-	public static void LogMap(float[,] map, bool isTension)
+	public static void LogMap(float[,] map)
 	{
 		for (int y = map.GetLength(1) - 1; y >= 0; y--)
 		{
@@ -138,7 +133,6 @@ public class Influence {
 			for (int x = 0; x < map.GetLength(0); x++)
 			{
 				float content = map[x,y];
-				if (isTension) content /= maxTension;
 				row = row + content.ToString() + ", ";
 			}
 			row = row + " )";
@@ -158,6 +152,16 @@ public class Influence {
 			row = row + " )";
 			Debug.LogFormat("{0}", row);
 		}
+	}
+
+	public static void LogPoints(List<Vector2> points)
+	{
+		string str = "";
+		foreach (Vector2 point in points)
+		{
+			str = str + "(" + point.x.ToString() + "," + point.y.ToString() + ") ";
+		}
+		Debug.Log(str);
 	}
 
 }

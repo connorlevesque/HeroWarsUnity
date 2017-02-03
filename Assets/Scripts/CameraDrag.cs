@@ -2,6 +2,8 @@
  
 public class CameraDrag : MonoBehaviour
 {
+    public bool activated = true;
+
     public float dragSpeed = 8;
     public float mapBuffer;
     private Vector3 dragOrigin;
@@ -24,21 +26,24 @@ public class CameraDrag : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (enabled) 
         {
+            if (Input.GetMouseButtonDown(0))
+            {
+                dragOrigin = Input.mousePosition;
+                return;
+            }
+     
+            if (!Input.GetMouseButton(0)) return;
+     
+            Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
+            Vector3 move = new Vector3(pos.x * dragSpeed * -1, pos.y * dragSpeed * -1, 0);
+     
+            transform.position += move;
             dragOrigin = Input.mousePosition;
-            return;
-        }
- 
-        if (!Input.GetMouseButton(0)) return;
- 
-        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-        Vector3 move = new Vector3(pos.x * dragSpeed * -1, pos.y * dragSpeed * -1, 0);
- 
-        transform.position += move;
-        dragOrigin = Input.mousePosition;
 
-        SnapToBoundaries();
+            SnapToBoundaries();
+        }
     }
 
     void SnapToBoundaries()

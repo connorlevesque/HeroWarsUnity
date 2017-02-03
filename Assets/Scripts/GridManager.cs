@@ -81,6 +81,37 @@ public class GridManager : MonoBehaviour {
 		return buildings;
 	}
 
+	public static List<Building> GetFriendlyProductionBuidlings()
+	{
+		List<Building> buildings = new List<Building>();
+		foreach (Tile tile in instance.tiles)
+		{
+			if (tile.isBuilding)
+			{
+				Building building = (Building)tile;
+				if (building.owner == BattleManager.GetCurrentPlayerIndex() &&
+					building.type == TileType.barracks)
+				{
+					buildings.Add((Building)tile);
+				}
+			}
+		}
+		return buildings;
+	}
+
+	public static Vector2 GetCastleLocationForOwner(int owner)
+	{
+		foreach (Building building in GetBuildings())
+		{
+			if (building.type == TileType.castle && building.owner == owner)
+			{
+				return building.transform.position;
+			}
+		}
+		Debug.LogFormat("Cannot find castle for player {0}", owner);
+		return new Vector2(-100, -100);
+	}
+
 	public static List<Vector2> GetCoordsToAttackHighlight(Vector2 position, int[] range)
 	{
 		List<Vector2> coords = new List<Vector2>();
@@ -124,6 +155,19 @@ public class GridManager : MonoBehaviour {
 		return instance.units;
 	}
 
+	public static Dictionary<Vector2,Unit> GetUnitsOfTypeAndOwner(UnitType type, int owner) 
+	{
+		Dictionary<Vector2,Unit> unitsOfTypeAndOwner = new Dictionary<Vector2,Unit>();
+		foreach (KeyValuePair<Vector2,Unit> pair in instance.units)
+		{
+			if (pair.Value.owner == owner && pair.Value.type == type)
+			{
+				unitsOfTypeAndOwner.Add(pair.Key,pair.Value);
+			}
+		}
+		return unitsOfTypeAndOwner;
+	}
+
 	public static Dictionary<Vector2,Unit> GetFriendlyUnits() {
 		Dictionary<Vector2,Unit> friendlyUnits = new Dictionary<Vector2,Unit>();
 		foreach (KeyValuePair<Vector2,Unit> pair in instance.units)
@@ -158,11 +202,12 @@ public class GridManager : MonoBehaviour {
 	}
 
 	// unit prefab accessors
-	public static GameObject GetUnitPrefab(UnitType type) 
+	public static GameObject GetUnitPrefab(UnitType type, int owner) 
 	{
 		foreach (GameObject prefab in instance.unitPrefabs)
 		{
-			if (prefab.GetComponent<Unit>().type == type)
+			if (prefab.GetComponent<Unit>().type == type &&
+				prefab.GetComponent<Unit>().owner == owner)
 			{
 				return prefab;
 			}
@@ -192,14 +237,39 @@ public class GridManager : MonoBehaviour {
 	{
 		Unit unit = instance.units[position];
 		instance.units.Remove(position);
+		if (unit.captureAssignment == new Vector2(-100,-100))
+		{
+			InputManager.CancelCaptureAssignment(unit.captureAssignment);
+		}
 		Destroy(unit.gameObject);
+		CheckForGameEnd();
+	}
+
+	public static void CheckForGameEnd()
+	{
+		if (GetFriendlyUnits().Count == 0)
+		{
+			if (BattleManager.GetCurrentPlayerIndex() == 1)
+			{
+				InputManager.WinLoseLevel("lose");
+			} else {
+				InputManager.WinLoseLevel("win");
+			}
+		} else if (GetEnemyUnits().Count == 0) {
+			if (BattleManager.GetCurrentPlayerIndex() == 1)
+			{
+				InputManager.WinLoseLevel("win");
+			} else {
+				InputManager.WinLoseLevel("lose");
+			}
+		}
 	}
 
 	public static void AddUnit(GameObject unitPrefab, Vector2 position)
 	{
-		GameObject unitGM = (GameObject)Instantiate(unitPrefab, position, Quaternion.identity);
-		unitGM.GetComponent<Unit>().Deactivate();
-		instance.units.Add(position, unitPrefab.GetComponent<Unit>());
+		GameObject unitGO = (GameObject)Instantiate(unitPrefab, position, Quaternion.identity);
+		unitGO.GetComponent<Unit>().Deactivate();
+		instance.units.Add(position, unitGO.GetComponent<Unit>());
 	}
 
 	public delegate void MoveUnitCompleted();
@@ -237,6 +307,21 @@ public class GridManager : MonoBehaviour {
 		foreach (Unit unit in GetFriendlyUnits().Values)
 		{
 			unit.Activate();
+		}
+	}
+
+	public static void HealUnits()
+	{
+		foreach (Building building in GetFriendlyBuildings())
+		{
+			if (GetUnit(building.transform.position))
+			{
+				Unit unit = GetUnit(building.transform.position);
+				if (unit.owner == building.owner)
+				{
+					unit.ChangeHealth(20);
+				}
+			}
 		}
 	}
 

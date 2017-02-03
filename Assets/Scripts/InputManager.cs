@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -13,6 +14,7 @@ public class InputManager : MonoBehaviour {
 	private GameObject selectedPrefab;
 	private Building selectedBuilding;
 	public bool canReceiveInput = true;
+	private string menuType;
 
 	void Awake()
 	{
@@ -33,6 +35,23 @@ public class InputManager : MonoBehaviour {
 	public static void SetReceiveInput(bool result)
 	{
 		instance.canReceiveInput = result;
+	}
+
+	public static bool IsPointerOverUIButton()
+	{
+		if (EventSystem.current.currentSelectedGameObject)
+		{
+			GameObject pointerObject = EventSystem.current.currentSelectedGameObject;
+			if (pointerObject.transform.parent)
+			{
+				GameObject parent = pointerObject.transform.parent.gameObject;
+				if (parent.CompareTag("UIManager"))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	// from base state
@@ -57,7 +76,10 @@ public class InputManager : MonoBehaviour {
 				instance.states.Push("action");
 				EnterState("action");
 			} else {
-				// go to range state
+				instance.selectedUnit = unit;
+				ExitState("base");
+				instance.states.Push("range");
+				EnterState("range");
 			}
 		}
 	}
@@ -66,14 +88,13 @@ public class InputManager : MonoBehaviour {
 	{
 		if (CanReceiveInput() && CurrentState() == "base")
 		{
-			if (building.owner == BattleManager.GetCurrentPlayerIndex())
+			if (building.owner == BattleManager.GetCurrentPlayerIndex() &&
+				building.type == TileType.barracks)
 			{
 				instance.selectedBuilding = building;
 				ExitState("base");
 				instance.states.Push("production");
 				EnterState("production");
-			} else {
-				// go to range state
 			}
 		}
 	}
@@ -245,11 +266,18 @@ public class InputManager : MonoBehaviour {
 	{
 		if (CanReceiveInput() && CurrentState() == "target")
 		{
-			GridManager.CalculateAttack(instance.selectedUnit, GridManager.GetUnit(position));
-			instance.selectedUnit.Deactivate();
-			ExitState("target");
-			instance.states.Clear();
-			EnterState("base");
+			Unit target = GridManager.GetUnit(position);
+			if (target)
+			{
+				if (target.owner != BattleManager.GetCurrentPlayerIndex())
+				{
+					GridManager.CalculateAttack(instance.selectedUnit, target);
+					instance.selectedUnit.Deactivate();
+					ExitState("target");
+					instance.states.Clear();
+					EnterState("base");
+				}
+			}
 		}
 	}
 
@@ -287,6 +315,38 @@ public class InputManager : MonoBehaviour {
 		}
 	}
 
+	public static void SaveBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "gameMenu")
+		{
+			// // save game here
+			// ExitState("gameMenu");
+			// EnterState("base");
+		}
+	}
+
+	public static void RestartBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "gameMenu")
+		{
+			instance.menuType = "restart";
+			ExitState("gameMenu");
+			instance.states.Push("confirmChangeScene");
+			EnterState("confirmChangeScene");
+		}
+	}
+
+	public static void QuitBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "gameMenu")
+		{
+			instance.menuType = "quit";
+			ExitState("gameMenu");
+			instance.states.Push("confirmChangeScene");
+			EnterState("confirmChangeScene");
+		}
+	}
+
 	public static void ChangeTurns()
 	{
 		ExitState("gameMenu");
@@ -303,10 +363,61 @@ public class InputManager : MonoBehaviour {
 		instance.states.Clear();
 	}
 
+	// from confirmChangeScene
+	public static void YesBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "confirmChangeScene")
+		{
+			if (instance.menuType == "restart")
+			{
+				GameManager.RestartLevel();
+			} else if (instance.menuType == "quit") {
+				GameManager.LoadSpecificLevel(0);
+			}
+		}
+	}
+
+	public static void NoBtnClicked()
+	{
+		if (CanReceiveInput() && CurrentState() == "confirmChangeScene")
+		{
+			ExitState("confirmChangeScene");
+			instance.states.Clear();
+			EnterState("base");
+		}
+	}
+
+	// from winLose
+	public static void OkayBtnClicked()
+	{
+		Debug.Log("1");
+		Debug.Log("2");
+		if (instance.menuType == "win")
+		{
+			GameManager.LoadNextLevel();
+		} else if (instance.menuType == "lose") {
+			Debug.Log("3");
+			GameManager.RestartLevel();
+		}
+	}
+
+	// to winLose
+	public static void WinLoseLevel(string winOrLose)
+	{
+		Debug.LogFormat("you {0}", winOrLose);
+		instance.computerOpponent.StopAllCoroutines();
+		instance.menuType = winOrLose;
+		ExitState(CurrentState());
+		instance.states.Push("winLose");
+		EnterState("winLose");
+	}
+
+	// computer opponent relevant
 	public static void StartTurn()
 	{
 		BattleManager.StartTurn();
 		instance.uiManager.UpdateFundsDisplay();
+		GridManager.HealUnits();
 		if (BattleManager.GetCurrentPlayerType() == PlayerType.computer)
 		{
 			SetReceiveInput(false);
@@ -314,6 +425,11 @@ public class InputManager : MonoBehaviour {
 		} else if (BattleManager.GetCurrentPlayerType() == PlayerType.local) {
 			SetReceiveInput(true);
 		}
+	}
+
+	public static void CancelCaptureAssignment(Vector2 assignment)
+	{
+		instance.computerOpponent.CancelCaptureAssignment(assignment);
 	}
 
 	// Enter/Exit state methods
@@ -334,11 +450,29 @@ public class InputManager : MonoBehaviour {
 		} else if (newState == "confirm") {
 			instance.uiManager.ShowConfirmUI();
 		} else if (newState == "range") {
-			instance.uiManager.ShowRangeUI();
+			instance.uiManager.ShowRangeUI(GetRangeStateCoords(instance.selectedUnit));
 		} else if (newState == "production") {
 			instance.uiManager.ShowProductionUI(GridManager.GetUnitPrefabs());
 		} else if (newState == "gameMenu") {
 			instance.uiManager.ShowGameMenuUI();
+		} else if (newState == "confirmChangeScene") {
+			string message = "";
+			if (instance.menuType == "restart")
+			{
+				message = "Are you sure you want to restart the level?";
+			} else if (instance.menuType == "quit") {
+				message = "Are you sure you want to quit to the start screen?";
+			}
+			instance.uiManager.ShowChangeSceneUI(message);
+		} else if (newState == "winLose") {
+			string message = "";
+			if (instance.menuType == "win")
+			{
+				message = "You won!";
+			} else if (instance.menuType == "lose") {
+				message = "You lost!";
+			}
+			instance.uiManager.ShowWinLoseUI(message);
 		}
 	}
 
@@ -360,7 +494,25 @@ public class InputManager : MonoBehaviour {
 			instance.uiManager.HideProductionUI();
 		} else if (oldState == "gameMenu") {
 			instance.uiManager.HideGameMenuUI();
+		} else if (oldState == "confirmChangeScene") {
+			instance.uiManager.HideChangeSceneUI();
+		} else if (oldState == "winLose") {
+			instance.uiManager.HideWinLoseUI();
 		}
+	}
+
+	public static List<Vector2> GetRangeStateCoords(Unit unit)
+	{
+		List<Vector2> coords = new List<Vector2>();
+		List<Vector2> movePositions = Pather.GetCoordsToMoveHighlight(unit);
+ 		foreach (Vector2 movePosition in movePositions)
+ 		{
+			foreach (Vector2 attackPosition in GridManager.GetCoordsToAttackHighlight(movePosition, unit.range))
+			{
+				if (!coords.Contains(attackPosition)) coords.Add(attackPosition);
+			}
+		}
+		return coords;
 	}
 
 	// state accessor

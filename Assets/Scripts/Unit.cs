@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public enum UnitType { footman, archer, scout, catapult, knight, guard, bombard, greatKnight };
 public enum UnitGroup { infantry, cavalry, artillery, flying };
-public enum Behaviour { none, hold, defend };
+public enum Behaviour { none, hold, defend, capture };
 
 public class Unit : MonoBehaviour {
 
@@ -39,6 +40,7 @@ public class Unit : MonoBehaviour {
 	// AI properties
 	public float powerConstant = 1;
 	public Behaviour behaviour = Behaviour.none;
+	public Vector2 captureAssignment = new Vector2(-100,-100);
 
 	void Awake()
 	{
@@ -53,7 +55,10 @@ public class Unit : MonoBehaviour {
 
 	void OnMouseUpAsButton()
 	{
-		InputManager.UnitClicked(this);
+		if (!InputManager.IsPointerOverUIButton())
+		{
+			InputManager.UnitClicked(this);
+		}
 	}
 
 	public void ChangeHealth(int amount)
@@ -80,12 +85,20 @@ public class Unit : MonoBehaviour {
 	public void Activate()
 	{
 		activated = true;
+		if (spriteRenderer.Equals(null))
+		{
+			spriteRenderer = GetComponent<SpriteRenderer>();
+		}
 		spriteRenderer.color = Color.white;
 	}
 
 	public void Deactivate()
 	{
 		activated = false;
+		if (spriteRenderer.Equals(null))
+		{
+			spriteRenderer = GetComponent<SpriteRenderer>();
+		}
 		spriteRenderer.color = inactiveColor;
 	}
 
