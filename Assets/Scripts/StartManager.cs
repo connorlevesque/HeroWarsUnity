@@ -18,9 +18,9 @@ public class StartManager : MonoBehaviour {
 	private void SetUpButtons()
 	{
 		newGameBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadNextLevel());
-		//loadGameBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadSpecificLevel(GameManager.lastLevelIndex + 3));
-		levelSelectBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadSpecificLevel(GameManager.lastLevelIndex + 1));
-		instructionsBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadSpecificLevel(GameManager.lastLevelIndex + 2));
+		//loadGameBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadSpecificLevel(GameManager.winScreenIndex + 3));
+		levelSelectBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadSpecificLevel(GameManager.winScreenIndex + 1));
+		instructionsBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.LoadSpecificLevel(GameManager.winScreenIndex + 2));
 		quitBtn.GetComponent<Button>().onClick.AddListener(() => GameManager.Quit());
 	}
 

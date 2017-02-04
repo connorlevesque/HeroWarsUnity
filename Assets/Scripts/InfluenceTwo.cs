@@ -15,7 +15,7 @@ public class InfluenceTwo {
 		influenceMap = new float[GridManager.Width(),GridManager.Height()];
 		oneTurnInfluenceMap = new float[GridManager.Width(),GridManager.Height()];
 		enemyOneTurnInfluenceMap = new float[GridManager.Width(),GridManager.Height()];
-		Vector2 castleLocation = GridManager.GetCastleLocationForOwner((BattleManager.GetCurrentPlayerIndex() + 1) % 2);
+		Vector2 castleLocation = GridManager.GetCastleLocationForOwner(BattleManager.GetNextPlayerIndex());
 		if (castleLocation != new Vector2(-100,-100))
 		{
 			enemyOneTurnInfluenceMap[(int)castleLocation.x,(int)castleLocation.y] += 50;
@@ -91,7 +91,7 @@ public class InfluenceTwo {
 			List<Vector2> addList = new List<Vector2>();
 			foreach (Vector2 positionToCheck in positionsToCheck)
 			{
-				Pather.SetUpNodes(positionToCheck, unit.grouping, true);
+				Pather.SetUpNodes(positionToCheck, unit.owner, unit.grouping, true);
 				List<Vector2> movePositions = Pather.GetMoveCoordsForFloodFill(positionToCheck, unit.movePoints);
 				foreach (Vector2 movePosition in movePositions)
 				{

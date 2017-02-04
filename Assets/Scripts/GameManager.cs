@@ -5,7 +5,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 
 	public static GameManager instance;
-	public static int lastLevelIndex = 4;
+	public static int winScreenIndex = 11;
 	private int currentScene;
 
 	void Awake() {
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour {
     public static void LoadNextLevel() {
         instance.StopAllCoroutines();
         instance.currentScene++;
-        if(instance.currentScene > lastLevelIndex) instance.currentScene = 0;
+        if(instance.currentScene > winScreenIndex) instance.currentScene = 0;
         SceneManager.LoadScene(instance.currentScene);
     }
 

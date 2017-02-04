@@ -108,7 +108,6 @@ public class GridManager : MonoBehaviour {
 				return building.transform.position;
 			}
 		}
-		Debug.LogFormat("Cannot find castle for player {0}", owner);
 		return new Vector2(-100, -100);
 	}
 
@@ -192,6 +191,18 @@ public class GridManager : MonoBehaviour {
 		return enemyUnits;
 	}
 
+	public static Dictionary<Vector2,Unit> GetUnitsForOwner(int owner) {
+		Dictionary<Vector2,Unit> ownerUnits = new Dictionary<Vector2,Unit>();
+		foreach (KeyValuePair<Vector2,Unit> pair in instance.units)
+		{
+			if (pair.Value.owner == owner)
+			{
+				ownerUnits.Add(pair.Key,pair.Value);
+			}
+		}
+		return ownerUnits;
+	}
+
 	public static List<UnitType> GetUnitTypes() {
 		List<UnitType> unitTypes = new List<UnitType>();
 		foreach (GameObject prefab in instance.unitPrefabs)
@@ -237,10 +248,7 @@ public class GridManager : MonoBehaviour {
 	{
 		Unit unit = instance.units[position];
 		instance.units.Remove(position);
-		if (unit.captureAssignment == new Vector2(-100,-100))
-		{
-			InputManager.CancelCaptureAssignment(unit.captureAssignment);
-		}
+		InputManager.UpdateAIUnitListOnDestroy(unit);
 		Destroy(unit.gameObject);
 		CheckForGameEnd();
 	}
@@ -295,7 +303,6 @@ public class GridManager : MonoBehaviour {
 
 	public static void MoveUnit(Vector2 a, Vector2 b, MoveUnitCompleted callBack)
 	{
-		Debug.LogFormat("vector b = ({0},{1})", b.x, b.y);
 		Unit unit = GetUnit(a);
 		instance.units.Remove(a);
 		instance.units.Add(b,unit);
@@ -352,9 +359,9 @@ public class GridManager : MonoBehaviour {
 
 	public static void CalculateAttack(Unit attacker, Unit defender)
 	{
-		Unit[] participants = Combat.CalculateCombatForUnits(attacker, defender);
-		Debug.LogFormat("attacker.health = {0}", participants[0].health);
-		Debug.LogFormat("defender.health = {0}", participants[1].health);
+		// Unit[] participants = Combat.CalculateCombatForUnits(attacker, defender);
+		// Debug.LogFormat("attacker.health = {0}", participants[0].health);
+		// Debug.LogFormat("defender.health = {0}", participants[1].health);
 		if (attacker.health <= 0)
 		{
 			DestroyUnit(attacker.transform.position);

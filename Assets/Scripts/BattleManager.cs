@@ -43,6 +43,16 @@ public class BattleManager : MonoBehaviour {
 		return instance.currentPlayerIndex;
 	}
 
+	public static int GetNextPlayerIndex()
+	{
+		return (instance.currentPlayerIndex % instance.totalPlayers) + 1;
+	}
+
+	public static int GetPlayerIndexAfter(int player)
+	{
+		return (player % instance.totalPlayers) + 1;
+	}
+
 	public static PlayerType GetCurrentPlayerType()
 	{
 		return instance.playerTypes[GetCurrentPlayerIndex()];

@@ -427,9 +427,9 @@ public class InputManager : MonoBehaviour {
 		}
 	}
 
-	public static void CancelCaptureAssignment(Vector2 assignment)
+	public static void UpdateAIUnitListOnDestroy(Unit unit)
 	{
-		instance.computerOpponent.CancelCaptureAssignment(assignment);
+		instance.computerOpponent.UpdateUnitListOnDestroy(unit);
 	}
 
 	// Enter/Exit state methods

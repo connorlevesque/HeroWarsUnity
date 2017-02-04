@@ -86,7 +86,7 @@ public class Influence {
 			List<Vector2> addList = new List<Vector2>();
 			foreach (Vector2 positionToCheck in positionsToCheck)
 			{
-				Pather.SetUpNodes(positionToCheck, unit.grouping, true);
+				Pather.SetUpNodes(positionToCheck, unit.owner, unit.grouping, true);
 				List<Vector2> movePositions = Pather.GetMoveCoordsForFloodFill(positionToCheck, unit.movePoints);
 				foreach (Vector2 movePosition in movePositions)
 				{

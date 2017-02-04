@@ -94,11 +94,10 @@ public class ComputerOpponent : MonoBehaviour {
 				}
 			}
 		}
-		Debug.Log("Potential units to train:");
-		LogPotentialUnitsToTrain(potentialPrefabLists);
+		// Debug.Log("Potential units to train:");
+		// LogPotentialUnitsToTrain(potentialPrefabLists);
 		if (potentialPrefabLists.Count == 0) return new List<GameObject>();
 		int r = UnityEngine.Random.Range(0,potentialPrefabLists.Count);
-		Debug.LogFormat("r = {0}", r);
 		return potentialPrefabLists[r];
 	}
 
@@ -117,15 +116,20 @@ public class ComputerOpponent : MonoBehaviour {
 		// InfluenceTwo.LogMap(InfluenceTwo.enemyOneTurnInfluenceMap);
 		// Debug.Log("enemyOneTurnInfluence points:");
 		// InfluenceTwo.LogPoints(InfluenceTwo.maxEnemyOneTurnInfluencePoints);
-		foreach (Unit unit in units)
+		for (int i = 0; i < units.Count; i++)
 		{
+			Unit unit = units[i];
+			if (unit.Equals(null)) 
+			{
+				break;
+			}
 			Vector2 moveGoal = ChooseMoveGoal(unit);
 			int[,,] distanceMap = Pather.GetDistanceMap(unit, moveGoal);
 			int[] bestDistance = new int[2] { 1000, 1000 };
 			List<Vector2> candidateMoves = new List<Vector2>();
 			foreach (Vector2 movePosition in Pather.GetAIMovePositions(unit, false))
 			{
-				if (movePosition != GridManager.GetCastleLocationForOwner((BattleManager.GetCurrentPlayerIndex() + 1) % 2) ||
+				if (movePosition != GridManager.GetCastleLocationForOwner(BattleManager.GetNextPlayerIndex()) ||
 					unit.behaviour == Behaviour.capture)
 				{
 				// if (InfluenceTwo.oneTurnInfluenceMap[(int)movePosition.x,(int)movePosition.y] <= safeInfluence)
@@ -155,7 +159,7 @@ public class ComputerOpponent : MonoBehaviour {
 			// Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
 			// 	unit.transform.position.x.ToString(), unit.transform.position.y.ToString(), 
 			// 	finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
-			Pather.LogDistanceMap(distanceMap);
+			// Pather.LogDistanceMap(distanceMap);
 			moving = true;
 			GridManager.MoveUnitAlongPath(unit, finalMove, Pather.GetPathToPoint(finalMove), () => { 
 				moving = false;
@@ -215,6 +219,15 @@ public class ComputerOpponent : MonoBehaviour {
 		}
 	}
 
+	public void UpdateUnitListOnDestroy(Unit unit)
+	{
+		if (units.Contains(unit))
+		{
+			units.Remove(unit);
+		}
+		CancelCaptureAssignment(unit.captureAssignment);
+	}
+
 	public void CancelCaptureAssignment(Vector2 assignment)
 	{
 		if (captureAssignments.Contains(assignment))
@@ -226,8 +239,13 @@ public class ComputerOpponent : MonoBehaviour {
 	public IEnumerator CheckAttacks()
 	{
 		attackFound = false;
-		foreach (Unit unit in units)
+		for (int i = 0; i < units.Count; i++)
 		{
+			Unit unit = units[i];
+			if (unit.Equals(null)) 
+			{
+				break;
+			}
 			// try capture
 			if (GridManager.CanUnitCapture(unit))
 			{

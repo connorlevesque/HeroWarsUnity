@@ -18,7 +18,7 @@ public class Pather {
 	public static List<Vector2> GetCoordsToMoveHighlight(Unit u)
 	{
 		unit = u;
-		SetUpNodes(unit.transform.position, unit.grouping, false);
+		SetUpNodes(unit.transform.position, unit.owner, unit.grouping, false);
 		return GetMoveCoordsFromNodes();
 	}
 
@@ -37,11 +37,11 @@ public class Pather {
 		return movePositions;
 	}
 
-	public static void SetUpNodes(Vector2 c, UnitGroup grouping, bool forFloodFill)
+	public static void SetUpNodes(Vector2 c, int unitOwner, UnitGroup grouping, bool forFloodFill)
 	{
 		center = c;
 		Tile[,] tiles = GridManager.GetTiles();
-		Dictionary<Vector2,Unit> enemyUnits = GridManager.GetEnemyUnits();
+		Dictionary<Vector2,Unit> enemyUnits = GridManager.GetUnitsForOwner(BattleManager.GetPlayerIndexAfter(unitOwner));
 		nodes = new Node[ GridManager.Width(), GridManager.Height() ];
 		for (int x = 0; x < GridManager.Width(); x++)
 		{
@@ -65,7 +65,7 @@ public class Pather {
 	{
 		List<Vector2> coords = new List<Vector2>();
 		coords.Add(unit.transform.position);
-		Dictionary<Vector2,Unit> friendlyUnits = GridManager.GetFriendlyUnits();
+		Dictionary<Vector2,Unit> friendlyUnits = GridManager.GetUnitsForOwner(unit.owner);
 		queue.Enqueue(nodes[(int)center.x,(int)center.y]);
 		while (queue.Count > 0)
 		{
@@ -142,18 +142,20 @@ public class Pather {
 	public static List<Vector2> GetPathToPoint(Vector2 p)
 	{
 		List<Vector2> path = new List<Vector2>();
+		int abortCounter = 0;
 		while (p != center)
 		{
 			Node target = nodes[(int)p.x,(int)p.y];
 			path.Insert(0, target.trace);
 			p -= target.trace;
+			abortCounter++;
+			if (abortCounter == 50) break;
 		}
 		return path;
 	}
 
 	public static int[,,] GetDistanceMap(Unit unit, Vector2 destination)
 	{
-		Debug.LogFormat("destination = ({0},{1})", destination.x, destination.y);
 		int[,,] distanceMap = new int[GridManager.Width(),GridManager.Height(),2];
 		for (int x = 0; x < distanceMap.GetLength(0); x++)
 		{
@@ -173,7 +175,7 @@ public class Pather {
 			List<Vector2> addList = new List<Vector2>();
 			foreach (Vector2 positionToCheck in positionsToCheck)
 			{
-				Pather.SetUpNodes(positionToCheck, unit.grouping, true);
+				Pather.SetUpNodes(positionToCheck, unit.owner, unit.grouping, true);
 				List<Vector2> movePositions = Pather.GetMoveCoordsForFloodFill(positionToCheck, unit.movePoints);
 				foreach (Vector2 movePosition in movePositions)
 				{
