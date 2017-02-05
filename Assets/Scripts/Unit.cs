@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 using System.Collections;
 
 public enum UnitType { footman, archer, scout, catapult, knight, guard, bombard, greatKnight };
@@ -104,7 +105,7 @@ public class Unit : MonoBehaviour {
 
 	public void ShowDamageLabel(int amount)
 	{
-		damageText.text = amount.ToString();
+		damageText.text = Math.Round(amount / 10f, 1).ToString();
 		damageLabel.SetActive(true);
 	}
 

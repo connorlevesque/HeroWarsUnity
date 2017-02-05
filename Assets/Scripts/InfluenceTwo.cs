@@ -12,7 +12,7 @@ public class InfluenceTwo {
 
 	public static void SetUpMaps()
 	{
-		influenceMap = new float[GridManager.Width(),GridManager.Height()];
+		// influenceMap = new float[GridManager.Width(),GridManager.Height()];
 		oneTurnInfluenceMap = new float[GridManager.Width(),GridManager.Height()];
 		enemyOneTurnInfluenceMap = new float[GridManager.Width(),GridManager.Height()];
 		Vector2 castleLocation = GridManager.GetCastleLocationForOwner(BattleManager.GetNextPlayerIndex());
@@ -23,23 +23,23 @@ public class InfluenceTwo {
 		Dictionary<Vector2,Unit> units = GridManager.GetUnits();
 		foreach (Unit unit in units.Values)
 		{
-			float[,] oneTurnUnitInfluence = new float[GridManager.Width(),GridManager.Height()];
-			float[,] unitInfluenceMap = GetUnitInfluence(unit, ref oneTurnUnitInfluence);
-			for (int x = 0; x < unitInfluenceMap.GetLength(0); x++)
+			float[,] oneTurnUnitInfluence = GetUnitOneTurnInfluence(unit);
+			//float[,] unitInfluenceMap = GetUnitInfluence(unit);
+			for (int x = 0; x < GridManager.Width(); x++)
 			{
-				for (int y = 0; y < unitInfluenceMap.GetLength(1); y++)
+				for (int y = 0; y < GridManager.Height(); y++)
 				{
-					float influence = unitInfluenceMap[x,y];
+					// float influence = unitInfluenceMap[x,y];
 					float oneTurnInfluence = oneTurnUnitInfluence[x,y];
 					float enemyOneTurnInfluence = oneTurnUnitInfluence[x,y];
 					if (unit.owner != BattleManager.GetCurrentPlayerIndex()) 
 					{
-						influence *= -1;
+						// influence *= -1;
 						oneTurnInfluence *= -1;
 					} else {
 						enemyOneTurnInfluence = 0;
 					}
-					influenceMap[x,y] += influence;
+					// influenceMap[x,y] += influence;
 					oneTurnInfluenceMap[x,y] += oneTurnInfluence;
 					enemyOneTurnInfluenceMap[x,y] += enemyOneTurnInfluence;
 				}
@@ -123,6 +123,16 @@ public class InfluenceTwo {
 			turnsAway++;
 		}
 		return unitInfluenceMap;
+	}
+
+	public static float[,] GetUnitOneTurnInfluence(Unit unit)
+	{
+		float[,] oneTurnUnitInfluence = new float[GridManager.Width(),GridManager.Height()];
+		foreach (Vector2 attackPoint in InputManager.GetRangeStateCoords(unit))
+		{
+			oneTurnUnitInfluence[(int)attackPoint.x,(int)attackPoint.y] = (float)unit.GetPower();
+		}
+		return oneTurnUnitInfluence;
 	}
 
 	public static void LogMap(float[,] map)

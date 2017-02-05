@@ -64,7 +64,7 @@ public class ComputerOpponent : MonoBehaviour {
 		List<List<GameObject>> potentialPrefabLists = new List<List<GameObject>>();
 		if (numProduction == 0) return new List<GameObject>();
 		float[] productionWeights = GetProductionWeights();
-		float fundsPerProduction = funds / numProduction;
+		float fundsPerProduction = Math.Min(funds / numProduction, 1000);
 		float highestPower = 0f;
 		foreach (GameObject unitPrefab in GridManager.GetUnitPrefabs())
 		{
@@ -112,8 +112,8 @@ public class ComputerOpponent : MonoBehaviour {
 		// Influence.LogMap(Influence.tensionMap, true);
 		// Debug.Log("Tension points:");
 		// Influence.LogTensionPoints();
-		// Debug.Log("enemyOneTurnInfluenceMap:");
-		// InfluenceTwo.LogMap(InfluenceTwo.enemyOneTurnInfluenceMap);
+		Debug.Log("enemyOneTurnInfluenceMap:");
+		InfluenceTwo.LogMap(InfluenceTwo.enemyOneTurnInfluenceMap);
 		// Debug.Log("enemyOneTurnInfluence points:");
 		// InfluenceTwo.LogPoints(InfluenceTwo.maxEnemyOneTurnInfluencePoints);
 		for (int i = 0; i < units.Count; i++)
@@ -154,11 +154,12 @@ public class ComputerOpponent : MonoBehaviour {
 				// }
 				}
 			}
+			if (candidateMoves.Count == 0) candidateMoves.Add(unit.transform.position);
 			int r = UnityEngine.Random.Range(0,candidateMoves.Count);
 			Vector2 finalMove = candidateMoves[r];
-			// Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
-			// 	unit.transform.position.x.ToString(), unit.transform.position.y.ToString(), 
-			// 	finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
+			Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
+				unit.transform.position.x.ToString(), unit.transform.position.y.ToString(), 
+				finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
 			// Pather.LogDistanceMap(distanceMap);
 			moving = true;
 			GridManager.MoveUnitAlongPath(unit, finalMove, Pather.GetPathToPoint(finalMove), () => { 
@@ -179,7 +180,7 @@ public class ComputerOpponent : MonoBehaviour {
 	public Vector2 ChooseMoveGoal(Unit unit)
 	{
 		Vector2 moveGoal = new Vector2();
-		if (unit.behaviour == Behaviour.capture && unit.grouping == UnitGroup.infantry)
+		if (unit.behaviour == Behaviour.capture)
 		{
 			if (unit.captureAssignment != new Vector2(-100,-100)) return unit.captureAssignment;
 			int lowestDistance = 1000;

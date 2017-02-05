@@ -17,7 +17,7 @@ public class ProductionMenu : MonoBehaviour {
 		{
 			if (unitPrefab.GetComponent<Unit>().owner == BattleManager.GetCurrentPlayerIndex())
 			{
-				GameObject productionSlot = (GameObject)Instantiate(productionSlotPrefab, position, Quaternion.identity, transform);
+				GameObject productionSlot = (GameObject)Instantiate(productionSlotPrefab, position + new Vector2 (70,0), Quaternion.identity, transform);
 				productionSlot.GetComponent<ProductionSlot>().SetSlotForUnit(unitPrefab);
 				productionSlots.Add(productionSlot);
 				position.y -= 130;

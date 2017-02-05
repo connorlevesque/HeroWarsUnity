@@ -26,7 +26,7 @@ public class CameraDrag : MonoBehaviour
 
     void Update()
     {
-        if (enabled) 
+        if (activated) 
         {
             if (Input.GetMouseButtonDown(0))
             {

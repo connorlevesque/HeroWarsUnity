@@ -275,16 +275,24 @@ public class GridManager : MonoBehaviour {
 
 	public static void AddUnit(GameObject unitPrefab, Vector2 position)
 	{
-		GameObject unitGO = (GameObject)Instantiate(unitPrefab, position, Quaternion.identity);
-		unitGO.GetComponent<Unit>().Deactivate();
-		instance.units.Add(position, unitGO.GetComponent<Unit>());
+		if (!GridManager.GetUnit(position))
+		{
+			GameObject unitGO = (GameObject)Instantiate(unitPrefab, position, Quaternion.identity);
+			unitGO.GetComponent<Unit>().Deactivate();
+			instance.units.Add(position, unitGO.GetComponent<Unit>());
+		}
 	}
 
 	public delegate void MoveUnitCompleted();
 
 	public static void MoveUnitAlongPath(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
 	{
-		instance.StartCoroutine(MoveUnitAlongPathCoroutine(unit, destination, path, callBack));
+		if (GetUnit(unit.transform.position) && IsPointInGrid(destination))
+		{
+			instance.StartCoroutine(MoveUnitAlongPathCoroutine(unit, destination, path, callBack));
+		} else {
+			callBack();
+		}
 	}
 
 	private static IEnumerator MoveUnitAlongPathCoroutine(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
@@ -304,9 +312,13 @@ public class GridManager : MonoBehaviour {
 	public static void MoveUnit(Vector2 a, Vector2 b, MoveUnitCompleted callBack)
 	{
 		Unit unit = GetUnit(a);
-		instance.units.Remove(a);
-		instance.units.Add(b,unit);
-		unit.transform.position = b;
+		if (unit) {
+			instance.units.Remove (a);
+			instance.units.Add (b, unit);
+			unit.transform.position = b;
+		} else {
+			Debug.LogFormat("Error: could not find unit at ({0},{1}) to move", a.x, a.y); 
+		}
 		callBack();
 	}
 
@@ -359,9 +371,9 @@ public class GridManager : MonoBehaviour {
 
 	public static void CalculateAttack(Unit attacker, Unit defender)
 	{
-		// Unit[] participants = Combat.CalculateCombatForUnits(attacker, defender);
-		// Debug.LogFormat("attacker.health = {0}", participants[0].health);
-		// Debug.LogFormat("defender.health = {0}", participants[1].health);
+		Unit[] participants = Combat.CalculateCombatForUnits(attacker, defender);
+		Debug.LogFormat("attacker.health = {0}", participants[0].health);
+		Debug.LogFormat("defender.health = {0}", participants[1].health);
 		if (attacker.health <= 0)
 		{
 			DestroyUnit(attacker.transform.position);
@@ -386,6 +398,17 @@ public class GridManager : MonoBehaviour {
 			} else {
 				building.RefreshControlPoints();
 			}
+		}
+	}
+
+	public static bool IsPointInGrid(Vector2 p)
+	{
+		if (p.x >= 0 && p.x < GridManager.Width() && p.x == Math.Floor(p.x) &&
+			p.y >= 0 && p.y < GridManager.Height() && p.y == Math.Floor(p.y))
+		{
+			return true;
+		} else {
+			return false;
 		}
 	}
 

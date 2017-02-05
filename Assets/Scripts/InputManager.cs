@@ -95,6 +95,7 @@ public class InputManager : MonoBehaviour {
 				ExitState("base");
 				instance.states.Push("production");
 				EnterState("production");
+				instance.selectedPrefab = null;
 			}
 		}
 	}
@@ -440,6 +441,7 @@ public class InputManager : MonoBehaviour {
 			instance.uiManager.ShowBaseUI();
 		} else if (newState == "action") {
 			List<Vector2> coords = Pather.GetCoordsToMoveHighlight(instance.selectedUnit);
+			if (coords.Contains(instance.selectedUnit.transform.position)) coords.Remove(instance.selectedUnit.transform.position);
 			bool canCapture = GridManager.CanUnitCapture(instance.selectedUnit);
 			instance.uiManager.ShowActionUI(coords, canCapture, CanUseAttackAction(), false, false);
 		} else if (newState == "target") {
