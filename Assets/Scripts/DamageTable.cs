@@ -4,7 +4,7 @@ using System.Collections;
 public class DamageTable {
 
 	private static int[,] table = new int[8,8] {
-		//	F	A	S	C	K	G	B	GK
+		// F	 A	 S	 C	 K	 G	 B	 GK
 		{  55, 55, 45, 10,  8,  5, 20, 	3 },	// F
 		{  65, 65, 55, 20, 35, 15, 30, 10 },	// A
 		{  60, 60, 55, 35, 10, 	7, 45, 	5 },	// S
