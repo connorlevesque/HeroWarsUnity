@@ -1,0 +1,18 @@
+
+To Add:
+	iOS Build
+	New Combat System
+	Redo Buildings
+	Fog of War
+	Multiplayer
+		Local
+		Online
+
+
+
+To Refactor:
+	Model Changes => Commands
+		InputManager
+		AI
+	Move static Unit and Tile properties to script from Editor
+	Decouple model xy and view (transform) xy
