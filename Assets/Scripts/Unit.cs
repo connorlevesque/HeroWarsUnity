@@ -56,9 +56,8 @@ public class Unit : MonoBehaviour {
 
 	void OnMouseUpAsButton()
 	{
-		if (!InputManager.IsPointerOverUIButton())
-		{
-			InputManager.UnitClicked(this);
+		if (!InputManager.IsPointerOverUIButton()) {
+			InputManager.HandleInput("tapUnit", this);
 		}
 	}
 

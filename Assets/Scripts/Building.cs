@@ -23,9 +23,8 @@ public class Building : Tile {
 
 	void OnMouseUpAsButton() 
 	{
-		if (!InputManager.IsPointerOverUIButton())
-		{
-			InputManager.BuildingClicked(this);
+		if (!InputManager.IsPointerOverUIButton()) {
+			InputManager.HandleInput("tapBuilding", this);
 		}
 	}
 

@@ -6,15 +6,12 @@ public class Highlight : MonoBehaviour {
 
 	public string color;
 
-	void OnMouseUpAsButton()
-	{
-		if (!InputManager.IsPointerOverUIButton())
-		{
-			if (color == "blue")
-			{
-				InputManager.MoveHighlightClicked(transform.position);
+	void OnMouseUpAsButton() {
+		if (!InputManager.IsPointerOverUIButton()) {
+			if (color == "blue") {
+				InputManager.HandleInput("tapBlueHighlight", transform.position);
 			} else if (color == "red") {
-				InputManager.AttackHighlightClicked(transform.position);
+				InputManager.HandleInput("tapRedHighlight", transform.position);
 			}
 		}
 	}

@@ -11,7 +11,7 @@ public class ProductionMenu : MonoBehaviour {
 
 	public void CreateProductionSlots(GameObject[] unitPrefabs)
 	{
-		transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => InputManager.TrainBtnClicked());
+		transform.GetChild(1).GetComponent<Button>().onClick.AddListener(() => InputManager.HandleInput("trainBtn"));
 		Vector2 position = slotPosition;
 		foreach (GameObject unitPrefab in unitPrefabs)
 		{

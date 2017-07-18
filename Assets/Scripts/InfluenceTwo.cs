@@ -128,7 +128,9 @@ public class InfluenceTwo {
 	public static float[,] GetUnitOneTurnInfluence(Unit unit)
 	{
 		float[,] oneTurnUnitInfluence = new float[GridManager.Width(),GridManager.Height()];
-		foreach (Vector2 attackPoint in InputManager.GetRangeStateCoords(unit))
+		UnitRangeState tempState = new UnitRangeState(unit); // TODO: refactor this BS
+		List<Vector2> attackableCoords = tempState.GetAttackableCoords(unit);
+		foreach (Vector2 attackPoint in attackableCoords)
 		{
 			oneTurnUnitInfluence[(int)attackPoint.x,(int)attackPoint.y] = (float)unit.GetPower();
 		}

@@ -16,7 +16,7 @@ public class ProductionSlot : MonoBehaviour {
 	{
 		transform.parent.GetComponent<ProductionMenu>().ClearCheckMarks();
 		checkMark.gameObject.SetActive(true);
-		InputManager.ProductionSlotClicked(unitPrefab);
+		InputManager.HandleInput("tapProductionSlot", unitPrefab);
 	}
 
 	public void SetSlotForUnit(GameObject uP)

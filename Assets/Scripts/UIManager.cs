@@ -11,8 +11,6 @@ public class UIManager : MonoBehaviour {
 	public GameObject nextBtn;
 	public GameObject attackBtn;
 	public GameObject captureBtn;
-	public GameObject rideBtn;
-	public GameObject dropBtn;
 	public GameObject waitBtn;
 	public GameObject endTurnBtn;
 	public GameObject fundsDisplay;
@@ -36,24 +34,25 @@ public class UIManager : MonoBehaviour {
 		UpdateFundsDisplay();
 	}
 
-	private void SetUpButtons()
-	{
-		gameMenuBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.GameMenuBtnClicked());
-		backBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.BackBtnClicked());
-		nextBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.NextBtnClicked());
-		attackBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.AttackBtnClicked());
-		captureBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.CaptureBtnClicked());
-		rideBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.RideBtnClicked());
-		dropBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.DropBtnClicked());
-		waitBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.WaitBtnClicked());
-		endTurnBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.EndTurnBtnClicked());
-		// gameMenu buttons
-		saveBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.SaveBtnClicked());
-		restartBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.RestartBtnClicked());
-		quitBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.QuitBtnClicked());
-		yesBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.YesBtnClicked());
-		noBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.NoBtnClicked());
-		okayBtn.GetComponent<Button>().onClick.AddListener(() => InputManager.OkayBtnClicked());
+	private void SetUpButtons() {
+		SetUpButton(gameMenuBtn, "gameMenuBtn");
+		SetUpButton(endTurnBtn, "endTurnBtn");
+		SetUpButton(backBtn, "backBtn");
+		SetUpButton(nextBtn, "nextBtn");
+		SetUpButton(attackBtn, "attackBtn");
+		SetUpButton(captureBtn, "captureBtn");
+		SetUpButton(waitBtn, "waitBtn");
+		SetUpButton(saveBtn, "saveBtn");
+		SetUpButton(restartBtn, "restartBtn");
+		SetUpButton(quitBtn, "quitBtn");
+		SetUpButton(yesBtn, "yesBtn");
+		SetUpButton(noBtn, "noBtn");
+		SetUpButton(okayBtn, "okayBtn");
+	}
+
+	private void SetUpButton(GameObject buttonObject, string input) {
+		Button button = buttonObject.GetComponent<Button>();
+		button.onClick.AddListener(() => InputManager.HandleInput(input));
 	}
 
 	// UI helper methods
@@ -240,5 +239,4 @@ public class UIManager : MonoBehaviour {
 	{
 		okayMenu.SetActive(false);
 	}
-
 }
