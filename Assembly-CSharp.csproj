@@ -70,6 +70,7 @@
      <Compile Include="Assets\Scripts\InputStates\UnitRangeState.cs" />
      <Compile Include="Assets\Scripts\LevelSelectManager.cs" />
      <Compile Include="Assets\Scripts\Pather.cs" />
+     <Compile Include="Assets\Scripts\PinchZoom.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
      <Compile Include="Assets\Scripts\ProductionMenu.cs" />
      <Compile Include="Assets\Scripts\ProductionSlot.cs" />
