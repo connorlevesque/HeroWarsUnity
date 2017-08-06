@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public class PinchZoom : MonoBehaviour
-{
-   public float perspectiveZoomSpeed = 0.5f;
-   public float orthoZoomSpeed = 0.5f;
+public class PinchZoom : MonoBehaviour {
+
+   public float zoomSpeed = .05f;
+   public float zoomInBound = 5f;
+   public float zoomOutBound = 15f;
 
    private Camera camera;
 
@@ -28,13 +29,22 @@ public class PinchZoom : MonoBehaviour
          // Find the difference in the distances between each frame.
          float deltaMagnitudeDiff = prevTouchDeltaMag - touchDeltaMag;
 
-         if (camera.isOrthoGraphic) {
-            camera.orthographicSize += deltaMagnitudeDiff * orthoZoomSpeed;
-            camera.orthographicSize = Mathf.Max(camera.orthographicSize, 0.1f);
-         } else {
-            camera.fieldOfView += deltaMagnitudeDiff * perspectiveZoomSpeed;
-            camera.fieldOfView = Mathf.Clamp(camera.fieldOfView, 0.1f, 179.9f);
-         }
+         // Zoom
+         camera.orthographicSize += deltaMagnitudeDiff * zoomSpeed;
+         camera.orthographicSize = Mathf.Max(camera.orthographicSize, zoomInBound);
+         camera.orthographicSize = Mathf.Min(camera.orthographicSize, zoomOutBound);
+
+         // // Move camera to maintain pinch center
+         // Vector2 pinchCenter = (touchZeroPrevPos + touchOnePrevPos) / 2f;
+         // Vector2 cameraToPinchCenter = pinchCenter - (Vector2)transform.position;
+         // cameraToPinchCenter.Normalize();
+         // transform.position -= (Vector3)cameraToPinchCenter * deltaMagnitudeDiff * .1f;
+
+         // SnapToBoundaries();
       }
+   }
+
+   private void SnapToBoundaries() {
+      GetComponent<CameraDrag>().SnapToBoundaries();
    }
 }

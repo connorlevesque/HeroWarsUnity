@@ -11,7 +11,7 @@ public class InputState {
             TransitionBack();
             break;
          default: 
-            Debug.LogFormat("Unknown input '{0}' passed to HandleInput()", input);
+            // Debug.LogFormat("Unknown input '{0}' passed to HandleInput()", input);
             break;
       }
    }
