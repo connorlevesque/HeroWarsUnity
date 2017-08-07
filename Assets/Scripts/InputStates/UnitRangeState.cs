@@ -27,7 +27,7 @@ public class UnitRangeState : InputState {
       bool isArtillery = unit.grouping == UnitGroup.artillery;
       if (isArtillery)
       {
-         return GridManager.GetCoordsToAttackHighlight(unit.transform.position, unit.range);
+         return GridManager.GetCoordsToAttackHighlight(unit.xy, unit.range);
       } else {
          List<Vector2> movePositions = Pather.GetCoordsToMoveHighlight(unit);
          foreach (Vector2 movePosition in movePositions) {

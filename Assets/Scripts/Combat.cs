@@ -16,8 +16,8 @@ public class Combat {
 	{
 		if (a.health > 0 && a.owner != b.owner)
 		{
-			int dx = (int)Mathf.Abs(a.transform.position.x - b.transform.position.x);
-			int dy = (int)Mathf.Abs(a.transform.position.y - b.transform.position.y);
+			int dx = (int)Mathf.Abs(a.x - b.x);
+			int dy = (int)Mathf.Abs(a.y - b.y);
 			if (a.range[0] <= dx + dy && dx + dy <= a.range[1])
 			{
 				return true;
@@ -30,8 +30,8 @@ public class Combat {
 	{
 		if (a.health > 0 && a.owner != b.owner && a.grouping != UnitGroup.artillery)
 		{
-			int dx = (int)Mathf.Abs(a.transform.position.x - b.transform.position.x);
-			int dy = (int)Mathf.Abs(a.transform.position.y - b.transform.position.y);
+			int dx = (int)Mathf.Abs(a.x - b.x);
+			int dy = (int)Mathf.Abs(a.y - b.y);
 			if (a.range[0] <= dx + dy && dx + dy <= a.range[1])
 			{
 				return true;
@@ -67,7 +67,7 @@ public class Combat {
 
 	public static int GetDefenseBonus(Unit unit)
 	{
-		Tile tile = GridManager.GetTile(unit.transform.position);
+		Tile tile = GridManager.GetTile(unit.xy);
 		int defenseBonus = tile.defenseBonus;
 		if (tile.isBuilding)
 		{

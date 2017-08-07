@@ -9,8 +9,6 @@ public class GridManager : MonoBehaviour {
 
 	public int width;
 	public int height;
-	public GameObject[] startingTiles;
-	public GameObject[] startingUnits;
 	public GameObject[] unitPrefabs;
 
 	private Tile[,] tiles;
@@ -105,7 +103,7 @@ public class GridManager : MonoBehaviour {
 		{
 			if (building.type == TileType.castle && building.owner == owner)
 			{
-				return building.transform.position;
+				return building.xy;
 			}
 		}
 		return new Vector2(-100, -100);
@@ -129,7 +127,7 @@ public class GridManager : MonoBehaviour {
 
 	public static bool CanUnitCapture(Unit unit)
 	{
-		Tile tile = GetTile(unit.transform.position);
+		Tile tile = GetTile(unit.xy);
 		if (tile.isBuilding) {
 			Building building = (Building)tile;
 			if (unit.grouping == UnitGroup.infantry && building.owner != unit.owner) {
@@ -235,13 +233,12 @@ public class GridManager : MonoBehaviour {
 	// change grid methods
 	public static void UpdateUnit(Unit unit)
 	{
-		instance.units[unit.transform.position] = unit;
+		instance.units[unit.xy] = unit;
 	}
 
 	public static void UpdateBuilding(Building building)
 	{
-		instance.tiles[(int)building.transform.position.x,
-					   (int)building.transform.position.y] = building;
+		instance.tiles[(int)building.x, (int)building.y] = building;
 	}
 
 	public static void DestroyUnit(Vector2 position)
@@ -305,7 +302,7 @@ public class GridManager : MonoBehaviour {
 
 	public static void MoveUnitAlongPath(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
 	{
-		if (GetUnit(unit.transform.position) && IsPointInGrid(destination))
+		if (GetUnit(unit.xy) && IsPointInGrid(destination))
 		{
 			instance.StartCoroutine(MoveUnitAlongPathCoroutine(unit, destination, path, callBack));
 		} else {
@@ -315,7 +312,7 @@ public class GridManager : MonoBehaviour {
 
 	private static IEnumerator MoveUnitAlongPathCoroutine(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
 	{
-		Vector2 startPosition = unit.transform.position;
+		Vector2 startPosition = unit.xy;
 		foreach (Vector2 direction in path)
 		{
 			int frames = 10;
@@ -333,7 +330,8 @@ public class GridManager : MonoBehaviour {
 		if (unit) {
 			instance.units.Remove (a);
 			instance.units.Add (b, unit);
-			unit.transform.position = b;
+         unit.xy = b;
+			unit.transform.position = unit.xy;
 		} else {
 			Debug.LogFormat("Error: could not find unit at ({0},{1}) to move", a.x, a.y); 
 		}
@@ -352,9 +350,9 @@ public class GridManager : MonoBehaviour {
 	{
 		foreach (Building building in GetFriendlyBuildings())
 		{
-			if (GetUnit(building.transform.position))
+			if (GetUnit(building.xy))
 			{
-				Unit unit = GetUnit(building.transform.position);
+				Unit unit = GetUnit(building.xy);
 				if (unit.owner == building.owner)
 				{
 					unit.ChangeHealth(20);
@@ -394,11 +392,11 @@ public class GridManager : MonoBehaviour {
 		Debug.LogFormat("defender.health = {0}", participants[1].health);
 		if (attacker.health <= 0)
 		{
-			DestroyUnit(attacker.transform.position);
+			DestroyUnit(attacker.xy);
 		}
 		if (defender.health <= 0)
 		{
-			DestroyUnit(defender.transform.position);
+			DestroyUnit(defender.xy);
 		}
 	}
 
@@ -407,9 +405,9 @@ public class GridManager : MonoBehaviour {
 		List<Building> buildings = GetBuildings();
 		foreach (Building building in buildings)
 		{
-			if (instance.units.ContainsKey(building.transform.position))
+			if (instance.units.ContainsKey(building.xy))
 			{
-				if (building.owner == instance.units[building.transform.position].owner)
+				if (building.owner == instance.units[building.xy].owner)
 				{
 					building.RefreshControlPoints();
 				}
@@ -430,15 +428,10 @@ public class GridManager : MonoBehaviour {
 		}
 	}
 
-	// initialization
 	void Awake() {
 		instance = this;
 		tiles = new Tile[width, height];
 		OrderUnitPrefabs();
-	}
-
-	void Start () {
-
 	}
 
 	private void OrderUnitPrefabs()

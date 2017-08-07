@@ -44,7 +44,7 @@ public class ComputerOpponent : MonoBehaviour {
 		for (int i = 0; i < productionBuildings.Count; i++)
 		{
 			Building building = productionBuildings[i];
-			if (GridManager.GetUnits().ContainsKey(building.transform.position)) productionBuildings.Remove(building);
+			if (GridManager.GetUnits().ContainsKey(building.xy)) productionBuildings.Remove(building);
 		}
 		int funds = BattleManager.GetFundsForCurrentPlayer();
 		if (UnityEngine.Random.Range(0,3) == 0) funds -= 100;
@@ -54,7 +54,7 @@ public class ComputerOpponent : MonoBehaviour {
 			int r = UnityEngine.Random.Range(0, productionBuildings.Count);
 			Building building = productionBuildings[r];
 			productionBuildings.Remove(building);
-			GridManager.AddUnit(unitPrefabsToTrain[i], building.transform.position);
+			GridManager.AddUnit(unitPrefabsToTrain[i], building.xy);
 			BattleManager.ChangeFunds(-1 * unitPrefabsToTrain[i].GetComponent<Unit>().cost);
 		}
 	}
@@ -154,11 +154,11 @@ public class ComputerOpponent : MonoBehaviour {
 				// }
 				}
 			}
-			if (candidateMoves.Count == 0) candidateMoves.Add(unit.transform.position);
+			if (candidateMoves.Count == 0) candidateMoves.Add(unit.xy);
 			int r = UnityEngine.Random.Range(0,candidateMoves.Count);
 			Vector2 finalMove = candidateMoves[r];
 			Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
-				unit.transform.position.x.ToString(), unit.transform.position.y.ToString(), 
+				unit.x.ToString(), unit.y.ToString(), 
 				finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
 			// Pather.LogDistanceMap(distanceMap);
 			moving = true;
@@ -168,7 +168,7 @@ public class ComputerOpponent : MonoBehaviour {
 			while (moving) {
 				yield return new WaitForSeconds(.1f);
 			}
-			if ((Vector2)unit.transform.position == moveGoal && GridManager.CanUnitCapture(unit))
+			if ((Vector2)unit.xy == moveGoal && GridManager.CanUnitCapture(unit))
 			{
 				CaptureBuilding(unit);
 			}
@@ -186,15 +186,15 @@ public class ComputerOpponent : MonoBehaviour {
 			int lowestDistance = 1000;
 			foreach (Building building in GridManager.GetEnemyBuildings())
 			{
-				if (!captureAssignments.Contains(building.transform.position))
+				if (!captureAssignments.Contains(building.xy))
 				{
-					int dx = (int)Math.Abs(unit.transform.position.x - building.transform.position.x);
-					int dy = (int)Math.Abs(unit.transform.position.y - building.transform.position.y);
+					int dx = (int)Math.Abs(unit.x - building.x);
+					int dy = (int)Math.Abs(unit.y - building.y);
 					int d = dx + dy;
 					if (d < lowestDistance) 
 					{
 						lowestDistance = d;
-						moveGoal = building.transform.position;
+						moveGoal = building.xy;
 					}
 				}
 			}
@@ -211,7 +211,7 @@ public class ComputerOpponent : MonoBehaviour {
 
 	public void CaptureBuilding(Unit unit)
 	{
-		Building building = (Building)GridManager.GetTile(unit.transform.position);
+		Building building = (Building)GridManager.GetTile(unit.xy);
 		building.Capture(unit);
 		if (building.owner == BattleManager.GetCurrentPlayerIndex())
 		{
@@ -250,7 +250,7 @@ public class ComputerOpponent : MonoBehaviour {
 			// try capture
 			if (GridManager.CanUnitCapture(unit))
 			{
-				Building building = (Building)GridManager.GetTile(unit.transform.position);
+				Building building = (Building)GridManager.GetTile(unit.xy);
 				if (building.controlPoints <= unit.HealthInt())
 				{
 					CaptureBuilding(unit);
@@ -296,13 +296,13 @@ public class ComputerOpponent : MonoBehaviour {
 
 	public Unit ChooseTarget(Unit unit, ref Vector2 attackPosition)
 	{
-		Vector2 startingPosition = unit.transform.position;
+		Vector2 startingPosition = unit.xy;
 		Unit chosenTarget = null;
 		float bestAttackValue = -100000;
 		foreach (Vector2 position in Pather.GetAIMovePositions(unit, true))
 		{
 			GridManager.MoveUnit(startingPosition, position, () => {});
-			foreach (Vector2 targetPosition in GridManager.GetCoordsToAttackHighlight(unit.transform.position, unit.range))
+			foreach (Vector2 targetPosition in GridManager.GetCoordsToAttackHighlight(unit.xy, unit.range))
 			{
 				Unit target = GridManager.GetUnit(targetPosition);
 				if (target)

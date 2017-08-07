@@ -81,9 +81,8 @@ public class CameraDrag : MonoBehaviour {
    }
 
    private void DragUnit() {
-      // highlight move tiles if !justDraggedUnit
+      InputManager.HandleInput("startDraggingUnit", tappedUnit);
       justDraggedUnit = true;
-      Debug.Log(tappedUnit.gameObject.name);
       GameObject unitGob = tappedUnit.gameObject;
       unitGob.transform.position = MousePosition();
       unitGob.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
@@ -93,8 +92,7 @@ public class CameraDrag : MonoBehaviour {
    private void CompleteUnitDrag() {
       if (justDraggedUnit) {
          GameObject unitGob = tappedUnit.gameObject;
-         // if valid move location, move unit
-         // else move back
+         InputManager.HandleInput("finishDraggingUnit", tappedUnit);
          unitGob.transform.localScale = new Vector3(1f,1f,1f);
          justDraggedUnit = false;
       }

@@ -18,7 +18,7 @@ public class Pather {
 	public static List<Vector2> GetCoordsToMoveHighlight(Unit u)
 	{
 		unit = u;
-		SetUpNodes(unit.transform.position, unit.owner, unit.grouping, false);
+		SetUpNodes(unit.xy, unit.owner, unit.grouping, false);
 		return GetMoveCoordsFromNodes();
 	}
 
@@ -30,7 +30,7 @@ public class Pather {
 		   (unit.grouping == UnitGroup.artillery && forAttack))
 		{
 			GetCoordsToMoveHighlight(unit);
-			movePositions.Add(unit.transform.position);
+			movePositions.Add(unit.xy);
 		} else {
 			movePositions = Pather.GetCoordsToMoveHighlight(unit);
 		}
@@ -64,7 +64,7 @@ public class Pather {
 	public static List<Vector2> GetMoveCoordsFromNodes()
 	{
 		List<Vector2> coords = new List<Vector2>();
-		coords.Add(unit.transform.position);
+		coords.Add(unit.xy);
 		Dictionary<Vector2,Unit> friendlyUnits = GridManager.GetUnitsForOwner(unit.owner);
 		queue.Enqueue(nodes[(int)center.x,(int)center.y]);
 		while (queue.Count > 0)

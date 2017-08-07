@@ -40,7 +40,7 @@ public class ActionState : InputState {
    }
 
    private void HandleCaptureButton() {
-      Tile tile = GridManager.GetTile(selectedUnit.transform.position);
+      Tile tile = GridManager.GetTile(selectedUnit.xy);
       if (tile.isBuilding) Capture((Building) tile);
    }
 
@@ -55,7 +55,7 @@ public class ActionState : InputState {
    }
 
    private void HandleBackButton() {
-      Vector2 position = selectedUnit.transform.position;
+      Vector2 position = selectedUnit.xy;
       bool hasMoved = position != Pather.center;
       if (hasMoved) {
          UndoMoveUnit(position);
@@ -83,7 +83,7 @@ public class ActionState : InputState {
    }
 
    public bool HasMoved() {
-      Vector2 position = selectedUnit.transform.position;
+      Vector2 position = selectedUnit.xy;
       return position != origin;
    }
 
@@ -91,8 +91,8 @@ public class ActionState : InputState {
       List<Vector2> coords = new List<Vector2>();
       if (!HasMoved()) {
          coords = Pather.GetCoordsToMoveHighlight(selectedUnit);
-         bool unitIsHighlighted = coords.Contains(selectedUnit.transform.position);
-         if (unitIsHighlighted) coords.Remove(selectedUnit.transform.position);
+         bool unitIsHighlighted = coords.Contains(selectedUnit.xy);
+         if (unitIsHighlighted) coords.Remove(selectedUnit.xy);
       }
       bool canCapture = GridManager.CanUnitCapture(selectedUnit);
       uiManager.ShowActionUI(coords, canCapture, CanUseAttackAction(), false, false);
@@ -104,6 +104,6 @@ public class ActionState : InputState {
 
    public ActionState(Unit unit) {
       selectedUnit = unit;
-      origin = (Vector2) selectedUnit.transform.position;
+      origin = (Vector2) selectedUnit.xy;
    }
 }

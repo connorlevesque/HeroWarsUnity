@@ -69,7 +69,7 @@ public class InfluenceTwo {
 		// bool isArtillery = unit.grouping == UnitGroup.artillery;
 		// if (isArtillery)
 		// {
-		// 	List<Vector2> attackPositions = GridManager.GetCoordsToAttackHighlight(unit.transform.position, unit.range);
+		// 	List<Vector2> attackPositions = GridManager.GetCoordsToAttackHighlight(unit.xy, unit.range);
 		// 	foreach (Vector2 attackPosition in attackPositions)
 		// 	{
 		// 		float influence = (float)unit.GetPower() / (float)Math.Pow(2 , Math.Pow(turnsAway, 2));

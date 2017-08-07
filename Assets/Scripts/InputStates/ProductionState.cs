@@ -27,7 +27,7 @@ public class ProductionState : InputState {
       if (selectedPrefab) {
          BattleManager.ChangeFunds(selectedPrefab.GetComponent<Unit>().cost * -1);
          uiManager.UpdateFundsDisplay();
-         GridManager.AddUnit(selectedPrefab, selectedBuilding.transform.position);
+         GridManager.AddUnit(selectedPrefab, selectedBuilding.xy);
          TransitionTo(new BaseState());
       }
    }

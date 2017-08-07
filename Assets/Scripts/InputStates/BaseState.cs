@@ -6,7 +6,10 @@ public class BaseState : InputState {
          case "tapUnit":
             HandleUnitTapped((Unit) context);
             break;
-         case "dragUnit":
+         case "startDraggingUnit":
+            // handle
+            break;
+         case "finishDraggingUnit":
             // handle
             break;
          case "tapBuilding":

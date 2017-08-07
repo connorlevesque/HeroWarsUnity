@@ -34,7 +34,7 @@ public class AbilityState : InputState {
    }
 
    public override void Enter() {
-      List<Vector2> coords = GridManager.GetCoordsToAttackHighlight(selectedUnit.transform.position, selectedUnit.range);
+      List<Vector2> coords = GridManager.GetCoordsToAttackHighlight(selectedUnit.xy, selectedUnit.range);
       GridManager.ShowDamageLabels(coords, selectedUnit);
       uiManager.ShowTargetUI(coords);
    }
