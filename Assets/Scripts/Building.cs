@@ -16,7 +16,8 @@ public class Building : Tile {
 
 	void Start()
 	{
-		spriteRenderer = GetComponent<SpriteRenderer>();
+		base.Start();
+      spriteRenderer = GetComponent<SpriteRenderer>();
 		canvas = transform.GetChild(0).gameObject;
 		controlText = transform.GetChild(0).GetChild(1).GetComponent<Text>();
 	}

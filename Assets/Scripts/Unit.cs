@@ -10,7 +10,11 @@ public enum Behaviour { none, hold, defend, capture };
 
 public class Unit : MonoBehaviour {
 
-	// general properties
+	// position properties
+   public Vector2 xy;
+      public int x {get{return (int)xy.x;}}
+      public int y {get{return (int)xy.y;}}
+   // general properties
 	public UnitType type;
 	public UnitGroup grouping;
 	public bool activated = true;
@@ -54,12 +58,24 @@ public class Unit : MonoBehaviour {
 		damageText = transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Text>();
 	}
 
+   void Start() {
+      Register();
+   }
+
 	void OnMouseUpAsButton()
 	{
 		if (!InputManager.IsPointerOverUIButton()) {
 			InputManager.HandleInput("tapUnit", this);
 		}
 	}
+
+   private void Register() {
+      int x = (int)Math.Round(transform.position.x);
+      int y = (int)Math.Round(transform.position.y);
+      xy = new Vector2(x,y);
+      transform.position = xy;
+      GridManager.RegisterUnit(this);
+   }
 
 	public void ChangeHealth(int amount)
 	{

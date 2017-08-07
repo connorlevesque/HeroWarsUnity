@@ -1,0 +1,55 @@
+
+
+Unit Movement flow
+
+Drag to Move/Attack
+- move along path
+- attack enemy target
+- move into friendly target
+   if applicable
+- wait automatically
+
+Undo Button
+- undoes your last action 
+   if it was a move
+
+Action Cycle Button
+- cycles through available actions
+- using a non-terminal action automatically cycles to next available action
+
+Drag to use Ability
+- 
+
+
+
+
+
+The problem with global undo:
+   It's unclear when you've fully committed to something
+
+
+
+What do I get from move undo?
+   The ability to view the consequences of your terminal actions by previewing even ones that require a move to use
+   What if the infopanel gave you a preview even when a move is out of range? That wat you could always check.
+   Now all actions are terminal and can only be used once per turn.
+
+   The second thing you get from undo is a safety net for accidental move inputs.
+   Unclear whether this is necessary.
+
+
+
+
+
+
+- if stationary ability
+   cannot be used after moving
+
+? do abilities have to be used immediately after move/attacking
+
+
+Ability Use Types
+   does not replace move or attack
+   replaces attack only
+   replaces move and attack
+

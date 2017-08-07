@@ -52,7 +52,7 @@ public class GridManager : MonoBehaviour {
 		List<Building> buildings = new List<Building>();
 		foreach (Tile tile in instance.tiles)
 		{
-			if (tile.isBuilding)
+         if (tile.isBuilding)
 			{
 				Building building = (Building)tile;
 				if (building.owner == BattleManager.GetCurrentPlayerIndex())
@@ -283,6 +283,24 @@ public class GridManager : MonoBehaviour {
 		}
 	}
 
+   public static void RegisterUnit(Unit unit) {
+      if (instance.units.ContainsKey(unit.xy)) {
+         string message = string.Format("Cannot register another unit '{0}' at position {1}", 
+            unit.gameObject.name, unit.xy);
+         throw new ArgumentException(message);
+      }
+      instance.units[unit.xy] = unit;
+   }
+
+   public static void RegisterTile(Tile tile) {
+      if (instance.tiles[tile.x, tile.y] != null) {
+         string message = string.Format("Cannot register another tile '{0}' at position {1}", 
+            tile.gameObject.name, tile.xy);
+         throw new ArgumentException(message);
+      }
+      instance.tiles[tile.x, tile.y] = tile;
+   }
+
 	public delegate void MoveUnitCompleted();
 
 	public static void MoveUnitAlongPath(Unit unit, Vector2 destination, List<Vector2> path, MoveUnitCompleted callBack)
@@ -416,45 +434,11 @@ public class GridManager : MonoBehaviour {
 	void Awake() {
 		instance = this;
 		tiles = new Tile[width, height];
-		ParseStartingTiles();
-		ParseStartingUnits();
 		OrderUnitPrefabs();
 	}
 
 	void Start () {
 
-	}
-
-	private void ParseStartingTiles()
-	{
-		int x;
-		int y;
-		foreach(GameObject element in startingTiles)
-		{
-			if (element.GetComponent<Tile>())
-			{
-				Tile tile = element.GetComponent<Tile>();
-				x = (int)tile.transform.position.x;
-				y = (int)tile.transform.position.y;
-				instance.tiles[x,y] = tile;
-			}
-		}
-	}
-
-	private void ParseStartingUnits()
-	{
-		int x;
-		int y;
-		foreach(GameObject element in startingUnits)
-		{
-			if (element.GetComponent<Unit>())
-			{
-				Unit unit = element.GetComponent<Unit>();
-				x = (int)unit.transform.position.x;
-				y = (int)unit.transform.position.y;
-				instance.units.Add(new Vector2(x,y), unit);
-			}
-		}
 	}
 
 	private void OrderUnitPrefabs()
