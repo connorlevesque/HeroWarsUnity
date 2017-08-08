@@ -324,19 +324,24 @@ public class GridManager : MonoBehaviour {
 		MoveUnit(startPosition, destination, callBack);
 	}
 
-	public static void MoveUnit(Vector2 a, Vector2 b, MoveUnitCompleted callBack)
+	public static void MoveUnit(Vector2 a, Vector2 b, MoveUnitCompleted callBack=null)
 	{
 		Unit unit = GetUnit(a);
-		if (unit) {
-			instance.units.Remove (a);
-			instance.units.Add (b, unit);
-         unit.xy = b;
-			unit.transform.position = unit.xy;
-		} else {
-			Debug.LogFormat("Error: could not find unit at ({0},{1}) to move", a.x, a.y); 
-		}
-		callBack();
+		MoveUnit(unit, b, callBack);
 	}
+
+   public static void MoveUnit(Unit unit, Vector2 b, MoveUnitCompleted callBack=null)
+   {
+      if (unit) {
+         instance.units.Remove (unit.xy);
+         instance.units.Add (b, unit);
+         unit.xy = b;
+         unit.transform.position = unit.xy;
+      } else {
+         Debug.LogFormat("Error: could not find unit at ({0},{1}) to move", unit.x, unit.y); 
+      }
+      if (callBack != null) callBack();
+   }
 
 	public static void ActivateUnits()
 	{

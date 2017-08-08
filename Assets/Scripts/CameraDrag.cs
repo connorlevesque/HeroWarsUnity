@@ -11,7 +11,7 @@ public class CameraDrag : MonoBehaviour {
    private float dragTimeThreshold = 0.15f;
    private bool stillOverSameUnit = false;
    private bool stayedOverUnit = true;
-   private bool justDraggedUnit = false;
+   private bool draggingUnit = false;
    private Unit tappedUnit;
 
    private float leftBound;
@@ -35,14 +35,15 @@ public class CameraDrag : MonoBehaviour {
 
    private void HandleDrag() {
       bool tapIsStarting = Input.GetMouseButtonDown(0);
+      bool tapIsHeld = Input.GetMouseButton(0);
+
       if (tapIsStarting) {
          RecordDragStart();
          return;
-      } else {
+      } else if (!tapIsHeld) {
          CompleteUnitDrag();
       }
 
-      bool tapIsHeld = Input.GetMouseButton(0);
       if (tapIsHeld) {
          if (CanDragUnit()) {
             DragUnit();
@@ -81,20 +82,20 @@ public class CameraDrag : MonoBehaviour {
    }
 
    private void DragUnit() {
-      InputManager.HandleInput("startDraggingUnit", tappedUnit);
-      justDraggedUnit = true;
+      draggingUnit = true;
       GameObject unitGob = tappedUnit.gameObject;
       unitGob.transform.position = MousePosition();
       unitGob.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-      // record move path as we go
+      InputManager.HandleInput("draggingUnit", tappedUnit);
    }
 
    private void CompleteUnitDrag() {
-      if (justDraggedUnit) {
+      if (draggingUnit) {
+         draggingUnit = false;
          GameObject unitGob = tappedUnit.gameObject;
-         InputManager.HandleInput("finishDraggingUnit", tappedUnit);
          unitGob.transform.localScale = new Vector3(1f,1f,1f);
-         justDraggedUnit = false;
+         InputManager.HandleInput("finishDraggingUnit", tappedUnit);
+         Debug.Log("Finished dragging unit");
       }
    }
 

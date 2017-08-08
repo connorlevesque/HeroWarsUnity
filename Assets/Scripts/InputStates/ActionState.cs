@@ -1,5 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Collections.Generic;
 
 public class ActionState : InputState {
 
@@ -10,6 +11,9 @@ public class ActionState : InputState {
       switch (input) {
          case "tapBlueHighlight": 
             MoveUnit((Vector3) context);
+            break;
+         case "finishDraggingUnit":
+            HandleUnitDragFinished((Unit) context);
             break;
          case "attackBtn":
             TransitionTo(new AbilityState(selectedUnit));
@@ -27,6 +31,18 @@ public class ActionState : InputState {
             base.HandleInput(input, context); 
             break;
       }
+   }
+
+   private void HandleUnitDragFinished(Unit unit) {
+      Vector2 unitDraggedPosition = unit.RoundedTransformPosition;
+      bool validPlaceToMove = uiManager.IsPointHighlighted(unitDraggedPosition);
+      if (validPlaceToMove) {
+         GridManager.MoveUnit(unit, unitDraggedPosition);
+      } else {
+         unit.transform.position = unit.xy;
+         TransitionBack();
+      }
+      uiManager.RemoveHighlights();
    }
 
    private void MoveUnit(Vector2 destination) {

@@ -55,8 +55,6 @@ public class UIManager : MonoBehaviour {
 		button.onClick.AddListener(() => InputManager.HandleInput(input));
 	}
 
-	// UI helper methods
-
 	public void Highlight(List<Vector2> coords, string color) {
 		GameObject highlight = highlightBlue;
 		if (color == "blue") {
@@ -70,6 +68,15 @@ public class UIManager : MonoBehaviour {
 			highlights.Add(highlight);
 		}
 	}
+
+   public bool IsPointHighlighted(Vector2 point) {
+      foreach (GameObject highlightGob in highlights) {
+         Highlight highlight = highlightGob.GetComponent<Highlight>();
+         bool pointIsHighlighted = (Vector2) highlight.transform.position == point;
+         if (pointIsHighlighted) return true;
+      }
+      return false;
+   }
 
 	public void RemoveHighlights() {
 		foreach (GameObject highlight in highlights) {

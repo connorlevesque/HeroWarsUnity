@@ -6,11 +6,8 @@ public class BaseState : InputState {
          case "tapUnit":
             HandleUnitTapped((Unit) context);
             break;
-         case "startDraggingUnit":
-            // handle
-            break;
-         case "finishDraggingUnit":
-            // handle
+         case "draggingUnit":
+            HandleUnitDragStarted((Unit) context);
             break;
          case "tapBuilding":
             HandleBuildingTapped((Building) context); 
@@ -30,6 +27,13 @@ public class BaseState : InputState {
          TransitionTo(new ActionState(unit));
       } else {
          TransitionTo(new UnitRangeState(unit));
+      }
+   }
+
+   private void HandleUnitDragStarted(Unit unit) {
+      bool isOwned = unit.owner == BattleManager.GetCurrentPlayerIndex();
+      if (unit.activated && isOwned) {
+         TransitionTo(new ActionState(unit));
       }
    }
 
