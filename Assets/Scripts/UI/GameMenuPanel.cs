@@ -8,9 +8,6 @@ public class GameMenuPanel : MonoBehaviour {
    public Button restartBtn;
    public Button quitBtn;
    public Button cancelBtn;
-   
-   public GameObject confirmMenuPrefab;
-   private GameObject confirmMenuGob;
 
    void Start() {
       SetUpButtons();
@@ -19,17 +16,12 @@ public class GameMenuPanel : MonoBehaviour {
    private void SetUpButtons() {
       restartBtn.onClick.AddListener(ShowConfirmRestartMenu);
       quitBtn.onClick.AddListener(ShowConfirmQuitMenu);
-      cancelBtn.onClick.AddListener(Cancel);
+      cancelBtn.onClick.AddListener(Close);
    }
 
    private void ShowConfirmRestartMenu() {
       gameObject.SetActive(false);
-      Transform parent = InputManager.UIManager.transform;
-      confirmMenuGob = Instantiate(confirmMenuPrefab, parent);
-      ConfirmMenu confirmMenu = confirmMenuGob.GetComponent<ConfirmMenu>();
-      confirmMenu.message.text = "Are you sure you want to restart the level?";
-      confirmMenu.onYes = Restart;
-      confirmMenu.onNo = HideConfirmMenu;
+      InputManager.UIManager.OpenConfirmMenu("Restart the level?", Restart, Open);
    }
 
    private void Restart() {
@@ -38,25 +30,19 @@ public class GameMenuPanel : MonoBehaviour {
 
    private void ShowConfirmQuitMenu() {
       gameObject.SetActive(false);
-      Transform parent = InputManager.UIManager.transform;
-      confirmMenuGob = Instantiate(confirmMenuPrefab, parent);
-      ConfirmMenu confirmMenu = confirmMenuGob.GetComponent<ConfirmMenu>();
-      confirmMenu.message.text = "Are you sure you want to quit the level?";
-      confirmMenu.onYes = Quit;
-      confirmMenu.onNo = HideConfirmMenu;
+      InputManager.UIManager.OpenConfirmMenu("Quit to main menu?", Quit, Open);
    }
 
    private void Quit() {
       
    }
 
-   private void HideConfirmMenu() {
-      Destroy(confirmMenuGob);
-      confirmMenuGob = null;
+   public void Open() {
+      InputManager.CanReceiveInput = false;
       gameObject.SetActive(true);
    }
 
-   private void Cancel() {
+   private void Close() {
       gameObject.SetActive(false);
       InputManager.CanReceiveInput = true;
    }

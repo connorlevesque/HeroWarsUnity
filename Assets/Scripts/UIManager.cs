@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -12,9 +13,6 @@ public class UIManager : MonoBehaviour {
    public GameObject gameMenu;
 	public GameObject fundsDisplay;
 	public ProductionMenu productionMenu;
-	public GameObject confirmMenu;
-	public GameObject yesBtn;
-	public GameObject noBtn;
 	public GameObject okayMenu;
 	public GameObject okayBtn;
 	// Highlights
@@ -23,8 +21,9 @@ public class UIManager : MonoBehaviour {
 	public GameObject highlightBlue;
 	public GameObject highlightRed;
 
-	void Start()
-	{
+   public GameObject confirmMenuPrefab;
+
+	void Start() {
 		SetUpButtons();
 		UpdateFundsDisplay();
 	}
@@ -33,8 +32,6 @@ public class UIManager : MonoBehaviour {
 		SetUpButton(gameMenuBtn, "gameMenuBtn");
 		SetUpButton(endTurnBtn, "endTurnBtn");
 		SetUpButton(nextBtn, "nextBtn");
-		SetUpButton(yesBtn, "yesBtn");
-		SetUpButton(noBtn, "noBtn");
 		SetUpButton(okayBtn, "okayBtn");
 	}
 
@@ -91,6 +88,14 @@ public class UIManager : MonoBehaviour {
 		}
 	}
 
+   public void OpenConfirmMenu(string message, Action onYes, Action onNo) {
+      GameObject confirmMenuGob = Instantiate(confirmMenuPrefab, transform);
+      ConfirmMenu confirmMenu = confirmMenuGob.GetComponent<ConfirmMenu>();
+      confirmMenu.message.text = message;
+      confirmMenu.onYes = onYes;
+      confirmMenu.onNo = onNo;
+   }
+
 	// Show/Hide UI for state methods
 	public void ShowTargetUI(List<Vector2> highlightCoords) {
 		Highlight(highlightCoords, "red");
@@ -115,15 +120,6 @@ public class UIManager : MonoBehaviour {
 
 	public void HideProductionUI() {
 		productionMenu.gameObject.SetActive(false);
-	}
-
-	public void ShowChangeSceneUI(string message) {
-		confirmMenu.transform.GetChild(1).GetComponent<Text>().text = message;
-		confirmMenu.SetActive(true);
-	}
-
-	public void HideChangeSceneUI() {
-		confirmMenu.SetActive(false);
 	}
 
 	public void ShowWinLoseUI(string message) {

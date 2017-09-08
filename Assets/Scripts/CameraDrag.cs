@@ -34,21 +34,23 @@ public class CameraDrag : MonoBehaviour {
    }
 
    private void HandleDrag() {
-      bool tapIsStarting = Input.GetMouseButtonDown(0);
-      bool tapIsHeld = Input.GetMouseButton(0);
+      if (InputManager.CanReceiveInput) {
+         bool tapIsStarting = Input.GetMouseButtonDown(0);
+         bool tapIsHeld = Input.GetMouseButton(0);
 
-      if (tapIsStarting) {
-         RecordDragStart();
-         return;
-      } else if (!tapIsHeld) {
-         CompleteUnitDrag();
-      }
+         if (tapIsStarting) {
+            RecordDragStart();
+            return;
+         } else if (!tapIsHeld) {
+            CompleteUnitDrag();
+         }
 
-      if (tapIsHeld) {
-         if (CanDragUnit()) {
-            DragUnit();
-         } else {
-            MoveCamera();
+         if (tapIsHeld) {
+            if (CanDragUnit()) {
+               DragUnit();
+            } else {
+               MoveCamera();
+            }
          }
       }
    }

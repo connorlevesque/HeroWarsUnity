@@ -8,15 +8,24 @@ public class InputState {
    public virtual void HandleInput(string input, params object[] context) {
       switch (input) {
          case "endTurnBtn":
-            InputManager.ChangeTurns();
+            OpenConfirmEndTurnMenu();
             break;
          case "gameMenuBtn":
-            TransitionTo(new GameMenuState());
+            OpenGameMenuPanel();
             break;
          default: 
             // Debug.LogFormat("Unknown input '{0}' passed to HandleInput()", input);
             break;
       }
+   }
+
+   private void OpenConfirmEndTurnMenu() {
+      uiManager.OpenConfirmMenu("End your turn?", InputManager.ChangeTurns, ()=>{});
+   }
+
+   private void OpenGameMenuPanel() {
+      GameMenuPanel gameMenuPanel = uiManager.gameMenu.GetComponent<GameMenuPanel>();
+      gameMenuPanel.Open();
    }
 
    public virtual void Enter() {}

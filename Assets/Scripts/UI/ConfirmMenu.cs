@@ -22,9 +22,11 @@ public class ConfirmMenu : MonoBehaviour {
 
    private void OnYes() {
       onYes();
+      Destroy(this.gameObject);
    }
 
    private void OnNo() {
-      onYes();
+      onNo();
+      Destroy(this.gameObject);
    }
 }

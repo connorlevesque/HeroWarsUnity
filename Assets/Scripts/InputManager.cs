@@ -30,11 +30,12 @@ public class InputManager : MonoBehaviour {
 
 	void Awake() {
 		instance = this;
+      uiManager = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
 	}
 
 	void Start() {
 		states.Push(new BaseState());
-		uiManager = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+      CanReceiveInput = true;
 		computerOpponent = GetComponent<ComputerOpponent>();
 	}
 

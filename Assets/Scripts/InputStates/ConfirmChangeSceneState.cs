@@ -32,12 +32,9 @@ public class ConfirmChangeSceneState : InputState {
       } else if (menuType == "quit") {
          message = "Are you sure you want to quit to the start screen?";
       }
-      uiManager.ShowChangeSceneUI(message);
    }
 
-   public override void Exit() {
-      uiManager.HideChangeSceneUI();
-   }
+   public override void Exit() {}
 
    public ConfirmChangeSceneState(string type) {
       menuType = type;
