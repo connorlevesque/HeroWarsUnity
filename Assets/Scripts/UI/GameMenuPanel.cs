@@ -25,7 +25,7 @@ public class GameMenuPanel : MonoBehaviour {
    }
 
    private void Restart() {
-
+      GameManager.RestartLevel();
    }
 
    private void ShowConfirmQuitMenu() {
@@ -34,7 +34,7 @@ public class GameMenuPanel : MonoBehaviour {
    }
 
    private void Quit() {
-      
+      GameManager.LoadSpecificLevel(0);
    }
 
    public void Open() {

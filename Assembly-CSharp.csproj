@@ -60,10 +60,8 @@
      <Compile Include="Assets\Scripts\InputStates\AbilityState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ActionState.cs" />
      <Compile Include="Assets\Scripts\InputStates\BaseState.cs" />
-     <Compile Include="Assets\Scripts\InputStates\ConfirmChangeSceneState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ConfirmState.cs" />
      <Compile Include="Assets\Scripts\InputStates\DragPathRefiner.cs" />
-     <Compile Include="Assets\Scripts\InputStates\GameMenuState.cs" />
      <Compile Include="Assets\Scripts\InputStates\GameOverState.cs" />
      <Compile Include="Assets\Scripts\InputStates\InputState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ProductionState.cs" />
