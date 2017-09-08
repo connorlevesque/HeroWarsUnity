@@ -1,11 +1,8 @@
 
 public class GameMenuState : InputState {
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
-         case "endTurnBtn":
-            InputManager.ChangeTurns();
-            break;
          case "saveBtn":
             // handle
             break;

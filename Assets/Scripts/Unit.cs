@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum UnitType { footman, archer, scout, catapult, knight, guard, bombard, greatKnight };
 public enum UnitGroup { infantry, cavalry, artillery, flying };
@@ -28,6 +29,7 @@ public class Unit : MonoBehaviour {
 	public bool activated = true;
 	public int owner;
 	public int movePoints;
+   public Dictionary<TileType,int> moveCosts;
 	public int[] range = new int[2];
 	// ride/drop properties
 	public bool canCarry = false;
@@ -68,6 +70,27 @@ public class Unit : MonoBehaviour {
 
    void Start() {
       Register();
+      SetMoveCosts();
+   }
+
+   private void SetMoveCosts() {
+      switch (grouping) {
+         case UnitGroup.infantry:
+            moveCosts = MoveCosts.Infantry;
+            break;
+         case UnitGroup.cavalry:
+            moveCosts = MoveCosts.Cavalry;
+            break;
+         case UnitGroup.artillery:
+            moveCosts = MoveCosts.Artillery;
+            break;
+         case UnitGroup.flying:
+            moveCosts = MoveCosts.Flying;
+            break;
+         default:
+            Debug.Log("Unknown UnitType for moveCosts");
+            break;
+      }
    }
 
 	void OnMouseUpAsButton()

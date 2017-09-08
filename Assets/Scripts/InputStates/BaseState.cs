@@ -1,16 +1,16 @@
 
 public class BaseState : InputState {
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "tapUnit":
-            HandleUnitTapped((Unit) context);
+            //HandleUnitTapped((Unit) context);
             break;
          case "draggingUnit":
-            HandleUnitDragStarted((Unit) context);
+            HandleUnitDragStarted((Unit) context[0]);
             break;
          case "tapBuilding":
-            HandleBuildingTapped((Building) context); 
+            HandleBuildingTapped((Building) context[1]); 
             break;
          case "gameMenuBtn":
             TransitionTo(new GameMenuState());
@@ -21,14 +21,14 @@ public class BaseState : InputState {
       }
    }
 
-   private void HandleUnitTapped(Unit unit) {
-      bool isOwned = unit.owner == BattleManager.GetCurrentPlayerIndex();
-      if (unit.activated && isOwned) {
-         TransitionTo(new ActionState(unit));
-      } else {
-         TransitionTo(new UnitRangeState(unit));
-      }
-   }
+   // private void HandleUnitTapped(Unit unit) {
+   //    bool isOwned = unit.owner == BattleManager.GetCurrentPlayerIndex();
+   //    if (unit.activated && isOwned) {
+   //       TransitionTo(new ActionState(unit));
+   //    } else {
+   //       TransitionTo(new UnitRangeState(unit));
+   //    }
+   // }
 
    private void HandleUnitDragStarted(Unit unit) {
       bool isOwned = unit.owner == BattleManager.GetCurrentPlayerIndex();

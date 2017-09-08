@@ -5,10 +5,10 @@ public class ProductionState : InputState {
    public Building selectedBuilding;
    public GameObject selectedPrefab;
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "tapProductionSlot":
-            SetSelectedPrefab((GameObject) context);
+            SetSelectedPrefab((GameObject) context[0]);
             break;
          case "trainBtn":
             TrainUnit();

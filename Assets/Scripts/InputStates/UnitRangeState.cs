@@ -5,7 +5,7 @@ public class UnitRangeState : InputState {
 
    public Unit selectedUnit;
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "tap_unit":
             // handle
@@ -29,7 +29,8 @@ public class UnitRangeState : InputState {
       {
          return GridManager.GetCoordsToAttackHighlight(unit.xy, unit.range);
       } else {
-         List<Vector2> movePositions = Pather.GetCoordsToMoveHighlight(unit);
+         UnitPather pather = new UnitPather(selectedUnit);
+         List<Vector2> movePositions = pather.MovePositions();
          foreach (Vector2 movePosition in movePositions) {
             foreach (Vector2 attackPosition in GridManager.GetCoordsToAttackHighlight(movePosition, unit.range))
             {

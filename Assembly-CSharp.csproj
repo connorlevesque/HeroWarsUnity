@@ -55,7 +55,6 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\GridManager.cs" />
      <Compile Include="Assets\Scripts\Highlight.cs" />
-     <Compile Include="Assets\Scripts\Influence.cs" />
      <Compile Include="Assets\Scripts\InfluenceTwo.cs" />
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\InputStates\AbilityState.cs" />
@@ -63,12 +62,14 @@
      <Compile Include="Assets\Scripts\InputStates\BaseState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ConfirmChangeSceneState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ConfirmState.cs" />
+     <Compile Include="Assets\Scripts\InputStates\DragPathRefiner.cs" />
      <Compile Include="Assets\Scripts\InputStates\GameMenuState.cs" />
      <Compile Include="Assets\Scripts\InputStates\GameOverState.cs" />
      <Compile Include="Assets\Scripts\InputStates\InputState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ProductionState.cs" />
      <Compile Include="Assets\Scripts\InputStates\UnitRangeState.cs" />
      <Compile Include="Assets\Scripts\LevelSelectManager.cs" />
+     <Compile Include="Assets\Scripts\MoveCosts.cs" />
      <Compile Include="Assets\Scripts\Pather.cs" />
      <Compile Include="Assets\Scripts\PinchZoom.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
@@ -79,6 +80,8 @@
      <Compile Include="Assets\Scripts\Tile.cs" />
      <Compile Include="Assets\Scripts\UIManager.cs" />
      <Compile Include="Assets\Scripts\Unit.cs" />
+     <Compile Include="Assets\Scripts\UnitPather.cs" />
+     <Compile Include="Assets\Scripts\XList.cs" />
      <None Include="Assets\Notes\UntiMovementFlow.txt" />
      <None Include="Assets\Notes\TODO.txt" />
  <Reference Include="UnityEngine.UI">

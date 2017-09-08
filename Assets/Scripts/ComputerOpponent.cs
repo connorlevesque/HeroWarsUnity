@@ -104,18 +104,8 @@ public class ComputerOpponent : MonoBehaviour {
 	public IEnumerator CheckMoves()
 	{
 		InfluenceTwo.SetUpMaps();
-		// Debug.Log("Influence:");
-		// Influence.LogMap(Influence.influenceMap, false);
-		// Debug.Log("One Turn Influence:");
-		// Influence.LogMap(Influence.oneTurnInfluenceMap, false);
-		// Debug.Log("Tension:");
-		// Influence.LogMap(Influence.tensionMap, true);
-		// Debug.Log("Tension points:");
-		// Influence.LogTensionPoints();
-		Debug.Log("enemyOneTurnInfluenceMap:");
-		InfluenceTwo.LogMap(InfluenceTwo.enemyOneTurnInfluenceMap);
-		// Debug.Log("enemyOneTurnInfluence points:");
-		// InfluenceTwo.LogPoints(InfluenceTwo.maxEnemyOneTurnInfluencePoints);
+		//Debug.Log("enemyOneTurnInfluenceMap:");
+		//InfluenceTwo.LogMap(InfluenceTwo.enemyOneTurnInfluenceMap);
 		for (int i = 0; i < units.Count; i++)
 		{
 			Unit unit = units[i];
@@ -124,10 +114,12 @@ public class ComputerOpponent : MonoBehaviour {
 				break;
 			}
 			Vector2 moveGoal = ChooseMoveGoal(unit);
+         Pather.GetCoordsToMoveHighlight(unit);
 			int[,,] distanceMap = Pather.GetDistanceMap(unit, moveGoal);
 			int[] bestDistance = new int[2] { 1000, 1000 };
 			List<Vector2> candidateMoves = new List<Vector2>();
-			foreach (Vector2 movePosition in Pather.GetAIMovePositions(unit, false))
+         UnitPather pather = new UnitPather(unit);
+			foreach (Vector2 movePosition in pather.BehaviorMovePositions(attacking: false))
 			{
 				if (movePosition != GridManager.GetCastleLocationForOwner(BattleManager.GetNextPlayerIndex()) ||
 					unit.behaviour == Behaviour.capture)
@@ -157,11 +149,12 @@ public class ComputerOpponent : MonoBehaviour {
 			if (candidateMoves.Count == 0) candidateMoves.Add(unit.xy);
 			int r = UnityEngine.Random.Range(0,candidateMoves.Count);
 			Vector2 finalMove = candidateMoves[r];
-			Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
-				unit.x.ToString(), unit.y.ToString(), 
-				finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
+			// Debug.LogFormat("{0} {1} moving from ({2},{3}) to ({4},{5}) en route to ({6},{7})", unit.type.ToString(), unit.owner.ToString(), 
+			// 	unit.x.ToString(), unit.y.ToString(), 
+			// 	finalMove.x.ToString(), finalMove.y.ToString(), moveGoal.x.ToString(), moveGoal.y.ToString());
 			// Pather.LogDistanceMap(distanceMap);
 			moving = true;
+         Pather.GetCoordsToMoveHighlight(unit);
 			GridManager.MoveUnitAlongPath(unit, finalMove, Pather.GetPathToPoint(finalMove), () => { 
 				moving = false;
 			});
@@ -202,8 +195,6 @@ public class ComputerOpponent : MonoBehaviour {
 			captureAssignments.Add(moveGoal);
 			return moveGoal;
 		}
-		// int r = UnityEngine.Random.Range(0,Influence.maxTensionPoints.Count);
-		// moveGoal = Influence.maxTensionPoints[r];
 		int r = UnityEngine.Random.Range(0,InfluenceTwo.maxEnemyOneTurnInfluencePoints.Count);
 		moveGoal = InfluenceTwo.maxEnemyOneTurnInfluencePoints[r];
 		return moveGoal;
@@ -264,6 +255,7 @@ public class ComputerOpponent : MonoBehaviour {
 			if (target)
 			{
 				moving = true;
+            Pather.GetCoordsToMoveHighlight(unit);
 				GridManager.MoveUnitAlongPath(unit, attackPosition, Pather.GetPathToPoint(attackPosition), () => { 
 					moving = false;
 				});
@@ -299,7 +291,8 @@ public class ComputerOpponent : MonoBehaviour {
 		Vector2 startingPosition = unit.xy;
 		Unit chosenTarget = null;
 		float bestAttackValue = -100000;
-		foreach (Vector2 position in Pather.GetAIMovePositions(unit, true))
+      UnitPather pather = new UnitPather(unit);
+		foreach (Vector2 position in pather.BehaviorMovePositions(attacking: true))
 		{
 			GridManager.MoveUnit(startingPosition, position, () => {});
 			foreach (Vector2 targetPosition in GridManager.GetCoordsToAttackHighlight(unit.xy, unit.range))
@@ -428,5 +421,4 @@ public class ComputerOpponent : MonoBehaviour {
 			Debug.Log(str);
 		}
 	}
-
 }

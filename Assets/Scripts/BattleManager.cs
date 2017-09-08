@@ -33,8 +33,7 @@ public class BattleManager : MonoBehaviour {
 	public static void EndTurn()
 	{
 		instance.turn++;
-		instance.currentPlayerIndex = 
-			(instance.currentPlayerIndex % instance.totalPlayers) + 1;
+		instance.currentPlayerIndex = (instance.currentPlayerIndex % instance.totalPlayers) + 1;
 	}
 
 	// property accessors

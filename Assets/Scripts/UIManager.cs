@@ -25,6 +25,7 @@ public class UIManager : MonoBehaviour {
 	public GameObject okayBtn;
 	// Highlights
 	private List<GameObject> highlights = new List<GameObject>();
+   private List<GameObject> highlightPath = new List<GameObject>();
 	public GameObject highlightBlue;
 	public GameObject highlightRed;
 
@@ -55,17 +56,19 @@ public class UIManager : MonoBehaviour {
 		button.onClick.AddListener(() => InputManager.HandleInput(input));
 	}
 
-	public void Highlight(List<Vector2> coords, string color) {
+	public void Highlight(List<Vector2> coords, string color, bool path=false) {
 		GameObject highlight = highlightBlue;
-		if (color == "blue") {
-			highlight = highlightBlue;
-		} else if (color == "red") {
-			highlight = highlightRed;
-		}
+		if (color == "blue") highlight = highlightBlue;
+		if (color == "red") highlight = highlightRed;
+      
 		foreach (Vector2 coord in coords) {
 			Vector3 position = new Vector3(coord.x, coord.y, -1);
 			highlight = (GameObject) Instantiate(highlight, position, Quaternion.identity);
-			highlights.Add(highlight);
+			if (path) {
+            highlightPath.Add(highlight);
+         } else {
+            highlights.Add(highlight);
+         }
 		}
 	}
 
@@ -85,6 +88,13 @@ public class UIManager : MonoBehaviour {
 		highlights.Clear();
 	}
 	
+   public void RemoveHighlightPath() {
+      foreach (GameObject highlight in highlightPath) {
+         Destroy(highlight);
+      }
+      highlightPath.Clear();
+   }
+
 	public void UpdateFundsDisplay() {
 		fundsDisplay.transform.GetChild(0).GetComponent<Text>().text = BattleManager.GetFundsForCurrentPlayer().ToString();
 		if (BattleManager.GetCurrentPlayerIndex() == 1) {

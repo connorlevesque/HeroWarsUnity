@@ -1,19 +1,24 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using ExtendedListAndArray;
 
 public class ActionState : InputState {
 
    public Unit selectedUnit;
    private Vector2 origin;
+   private DragPathRefiner pathRefiner;
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "tapBlueHighlight": 
-            MoveUnit((Vector3) context);
+            //MoveUnit((Vector3) context);
+            break;
+         case "draggingUnit":
+            UpdatePaths((Vector2) context[1]);
             break;
          case "finishDraggingUnit":
-            HandleUnitDragFinished((Unit) context);
+            HandleUnitDragFinished((Unit) context[0]);
             break;
          case "attackBtn":
             TransitionTo(new AbilityState(selectedUnit));
@@ -25,7 +30,7 @@ public class ActionState : InputState {
             Wait();
             break;
          case "backBtn":
-            HandleBackButton();
+            //HandleBackButton();
             break;
          default:
             base.HandleInput(input, context); 
@@ -33,27 +38,42 @@ public class ActionState : InputState {
       }
    }
 
-   private void HandleUnitDragFinished(Unit unit) {
-      Vector2 unitDraggedPosition = unit.RoundedTransformPosition;
-      bool validPlaceToMove = uiManager.IsPointHighlighted(unitDraggedPosition);
-      if (validPlaceToMove) {
-         GridManager.MoveUnit(unit, unitDraggedPosition);
-      } else {
-         unit.transform.position = unit.xy;
-         TransitionBack();
-      }
-      uiManager.RemoveHighlights();
+   private void UpdatePaths(Vector2 mouseGridPosition) {
+      pathRefiner.UpdatePaths(mouseGridPosition);
+      uiManager.RemoveHighlightPath();
+      uiManager.Highlight(pathRefiner.ActionPath, "blue", true);
    }
 
-   private void MoveUnit(Vector2 destination) {
-      List<Vector2> path = Pather.GetPathToPoint(destination);
-      InputManager.SetReceiveInput(false);
-      GridManager.MoveUnitAlongPath(selectedUnit, destination, path, () => { 
-         CheckActions();
-         InputManager.SetReceiveInput(true);
-      });
-      uiManager.RemoveHighlights();
+   private void HandleUnitDragFinished(Unit unit) {
+      uiManager.RemoveHighlightPath();
+      selectedUnit = unit;
+      Vector2 dragPosition = selectedUnit.RoundedTransformPosition;
+      bool moving = pathRefiner.MovePositions.Contains(dragPosition) && dragPosition != selectedUnit.xy;
+      bool attacking = pathRefiner.AttackPositions.Contains(dragPosition);
+
+      if (moving || attacking) {
+         GridManager.MoveUnit(selectedUnit, pathRefiner.Destination);
+         if (attacking) {
+            Unit targetUnit = GridManager.GetUnit(pathRefiner.Target);
+            GridManager.CalculateAttack(selectedUnit, targetUnit);
+         }
+         selectedUnit.Deactivate();
+         TransitionTo(new BaseState());
+      } else {
+         selectedUnit.transform.position = selectedUnit.xy;
+         TransitionBack();
+      }
    }
+
+   // private void MoveUnit(Vector2 destination) {
+   //    List<Vector2> path = Pather.GetPathToPoint(destination);
+   //    InputManager.SetReceiveInput(false);
+   //    GridManager.MoveUnitAlongPath(selectedUnit, destination, path, () => { 
+   //       CheckActions();
+   //       InputManager.SetReceiveInput(true);
+   //    });
+   //    uiManager.RemoveHighlights();
+   // }
 
    private void HandleCaptureButton() {
       Tile tile = GridManager.GetTile(selectedUnit.xy);
@@ -70,23 +90,23 @@ public class ActionState : InputState {
       TransitionTo(new BaseState());
    }
 
-   private void HandleBackButton() {
-      Vector2 position = selectedUnit.xy;
-      bool hasMoved = position != Pather.center;
-      if (hasMoved) {
-         UndoMoveUnit(position);
-      } else {
-         TransitionBack();
-      }
-   }
+   // private void HandleBackButton() {
+   //    Vector2 position = selectedUnit.xy;
+   //    bool hasMoved = position != Pather.center;
+   //    if (hasMoved) {
+   //       UndoMoveUnit(position);
+   //    } else {
+   //       TransitionBack();
+   //    }
+   // }
 
-   private void UndoMoveUnit(Vector2 position) {
-      GridManager.MoveUnit(position, Pather.center, () => { 
-         CheckActions();
-         InputManager.SetReceiveInput(true);
-      });
-      this.Enter();
-   }
+   // private void UndoMoveUnit(Vector2 position) {
+   //    GridManager.MoveUnit(position, Pather.center, () => { 
+   //       CheckActions();
+   //       InputManager.SetReceiveInput(true);
+   //    });
+   //    this.Enter();
+   // }
 
    public void CheckActions() {
       uiManager.ToggleCaptureBtn(GridManager.CanUnitCapture(selectedUnit));
@@ -104,17 +124,13 @@ public class ActionState : InputState {
    }
 
    public override void Enter() {
-      List<Vector2> coords = new List<Vector2>();
-      if (!HasMoved()) {
-         coords = Pather.GetCoordsToMoveHighlight(selectedUnit);
-         bool unitIsHighlighted = coords.Contains(selectedUnit.xy);
-         if (unitIsHighlighted) coords.Remove(selectedUnit.xy);
-      }
-      bool canCapture = GridManager.CanUnitCapture(selectedUnit);
-      uiManager.ShowActionUI(coords, canCapture, CanUseAttackAction(), false, false);
+      pathRefiner = new DragPathRefiner(selectedUnit);
+      uiManager.Highlight(pathRefiner.MovePositions, "blue");
+      uiManager.Highlight(pathRefiner.AttackPositions, "red");
    }
 
    public override void Exit() {
+      uiManager.RemoveHighlights();
       uiManager.HideActionUI();
    }
 

@@ -5,10 +5,10 @@ public class AbilityState : InputState {
 
    public Unit selectedUnit;
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "tapRedHighlight":
-            HandleRedHighlightTapped((Vector3) context);
+            HandleRedHighlightTapped((Vector3) context[0]);
             break;
          case "dragUnit":
             // handle

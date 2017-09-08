@@ -5,14 +5,13 @@ using System.Collections.Generic;
 
 //public enum Direction { NORTH, SOUTH, EAST, WEST };
 
-
 public class Pather {
 
 	private static Unit unit;
 
 	public static Vector2 center;
-	private static Node[,] nodes;
-	private static Queue<Node> queue = new Queue<Node>();
+	private static OldNode[,] nodes;
+	private static Queue<OldNode> queue = new Queue<OldNode>();
 	private static Vector2[] directions = new Vector2[4] { Vector2.up, Vector2.down, Vector2.left, Vector2.right };
 
 	public static List<Vector2> GetCoordsToMoveHighlight(Unit u)
@@ -42,7 +41,7 @@ public class Pather {
 		center = c;
 		Tile[,] tiles = GridManager.GetTiles();
 		Dictionary<Vector2,Unit> enemyUnits = GridManager.GetUnitsForOwner(BattleManager.GetPlayerIndexAfter(unitOwner));
-		nodes = new Node[ GridManager.Width(), GridManager.Height() ];
+		nodes = new OldNode[ GridManager.Width(), GridManager.Height() ];
 		for (int x = 0; x < GridManager.Width(); x++)
 		{
 			for (int y = 0; y < GridManager.Height(); y++)
@@ -55,7 +54,7 @@ public class Pather {
 				} else {
 					moveCost = tiles[x,y].moveCosts[(int)grouping];
 				}
-				nodes[x,y] = new Node(position, moveCost);
+				nodes[x,y] = new OldNode(position, moveCost);
 			}
 		}
 		nodes[(int)center.x,(int)center.y].pathCost = 0;
@@ -69,14 +68,14 @@ public class Pather {
 		queue.Enqueue(nodes[(int)center.x,(int)center.y]);
 		while (queue.Count > 0)
 		{
-			Node u = queue.Dequeue();
+			OldNode u = queue.Dequeue();
 			foreach (Vector2 direction in directions)
 			{
 				int vx = (int)(u.position.x + direction.x);
 				int vy = (int)(u.position.y + direction.y);
 				if (NodeInBounds(vx,vy))
 				{
-					Node v = nodes[vx, vy];
+					OldNode v = nodes[vx, vy];
 					if (v.moveCost > 0)
 					{
 						int newPathCost = u.pathCost + v.moveCost;
@@ -101,14 +100,14 @@ public class Pather {
 		queue.Enqueue(nodes[(int)position.x,(int)position.y]);
 		while (queue.Count > 0)
 		{
-			Node u = queue.Dequeue();
+			OldNode u = queue.Dequeue();
 			foreach (Vector2 direction in directions)
 			{
 				int vx = (int)(u.position.x + direction.x);
 				int vy = (int)(u.position.y + direction.y);
 				if (NodeInBounds(vx,vy))
 				{
-					Node v = nodes[vx, vy];
+					OldNode v = nodes[vx, vy];
 					if (v.moveCost > 0)
 					{
 						int newPathCost = u.pathCost + v.moveCost;
@@ -126,26 +125,18 @@ public class Pather {
 		return coords;
 	}
 
-	private static bool NodeInBounds(int x, int y)
-	{
-		if ((x >= 0) &&
-			(x < GridManager.Width()) &&
-			(y >= 0) &&
-			(y < GridManager.Height()))
-		{
-			return true;
-		} else {
-			return false;
-		}
+	private static bool NodeInBounds(int x, int y) {
+		return x >= 0 && x < GridManager.Width() && y >= 0 && y < GridManager.Height();
 	}
 
 	public static List<Vector2> GetPathToPoint(Vector2 p)
 	{
-		List<Vector2> path = new List<Vector2>();
+      List<Vector2> path = new List<Vector2>();
 		int abortCounter = 0;
 		while (p != center)
 		{
-			Node target = nodes[(int)p.x,(int)p.y];
+         Debug.LogFormat("{0},{1}", p.x, p.y);
+         OldNode target = nodes[(int)p.x,(int)p.y];
 			path.Insert(0, target.trace);
 			p -= target.trace;
 			abortCounter++;
@@ -218,17 +209,15 @@ public class Pather {
 }
 
 
-public class Node {
+public class OldNode {
 
 	public Vector2 position = new Vector2();
 	public int moveCost;
-	public int pathCost = 100;
+	public int pathCost = 1000;
 	public Vector2 trace;
 
-	public Node(Vector2 p, int mC)
-	{
-		position = p;
-		moveCost = mC;
+	public OldNode(Vector2 position, int moveCost) {
+		this.position = position;
+		this.moveCost = moveCost;
 	}
-
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections.Generic;
  
 public class CameraDrag : MonoBehaviour {
@@ -22,11 +23,10 @@ public class CameraDrag : MonoBehaviour {
    void Start() {
     	Camera camera = GetComponent<Camera>();
     	float camSize = camera.orthographicSize;
-    	GridManager gM = GameObject.FindWithTag("GridManager").GetComponent<GridManager>();
     	leftBound = camSize * 1.78f - mapBuffer - 0.5f;
-    	rightBound = gM.width + mapBuffer - 0.5f - camSize * 1.78f;
+    	rightBound = GridManager.Width() + mapBuffer - 0.5f - camSize * 1.78f;
     	lowerBound = camSize - mapBuffer - 0.5f;
-    	upperBound = gM.height + mapBuffer - 0.5f - camSize;
+    	upperBound = GridManager.Height() + mapBuffer - 0.5f - camSize;
    }
 
    void Update() {
@@ -84,9 +84,9 @@ public class CameraDrag : MonoBehaviour {
    private void DragUnit() {
       draggingUnit = true;
       GameObject unitGob = tappedUnit.gameObject;
-      unitGob.transform.position = MousePosition();
+      unitGob.transform.position = MouseWorldPosition();
       unitGob.transform.localScale = new Vector3(1.2f, 1.2f, 1f);
-      InputManager.HandleInput("draggingUnit", tappedUnit);
+      InputManager.HandleInput("draggingUnit", tappedUnit, MouseGridPosition());
    }
 
    private void CompleteUnitDrag() {
@@ -135,12 +135,19 @@ public class CameraDrag : MonoBehaviour {
    }
 
    private RaycastHit2D[] GameObjectsUnderTap() {
-      RaycastHit2D[] hits = new RaycastHit2D[] {};
-      return Physics2D.RaycastAll(MousePosition(), Vector2.zero);
+      return Physics2D.RaycastAll(MouseWorldPosition(), Vector2.zero);
    } 
 
-   private Vector2 MousePosition() {
+   private Vector2 MouseGridPosition() {
+      return RoundVector(MouseWorldPosition());
+   }
+
+   private Vector2 MouseWorldPosition() {
       Vector3 position3D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
       return new Vector2(position3D.x, position3D.y);
+   }
+
+   private Vector2 RoundVector(Vector2 v) {
+      return new Vector2((float)Math.Round(v.x), (float)Math.Round(v.y));
    }
 }

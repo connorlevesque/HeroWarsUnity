@@ -3,7 +3,7 @@ public class GameOverState : InputState {
 
    private string menuType;
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "okayBtn":
             CompleteLevel();

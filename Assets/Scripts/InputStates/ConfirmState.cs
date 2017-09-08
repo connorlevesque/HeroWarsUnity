@@ -1,7 +1,7 @@
 
 public class ConfirmAbilityState : InputState {
 
-   public override void HandleInput(string input, object context) {
+   public override void HandleInput(string input, params object[] context) {
       switch (input) {
          case "tap_unit":
             // handle

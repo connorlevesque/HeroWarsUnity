@@ -26,7 +26,7 @@ public class InputManager : MonoBehaviour {
 		computerOpponent = GetComponent<ComputerOpponent>();
 	}
 
-	public static void HandleInput(string input, object context=null) {
+	public static void HandleInput(string input, params object[] context) {
 		if (CanReceiveInput()) CurrentState().HandleInput(input, context);
 	}
 
@@ -35,7 +35,6 @@ public class InputManager : MonoBehaviour {
 		if (newState.Name() == "BaseState") instance.states.Clear();
 		instance.states.Push(newState);
 		newState.Enter();
-		// Debug.LogFormat("Entered state {0}", newState.Name());
 	}
 
 	public static void TransitionBack() {
@@ -43,7 +42,6 @@ public class InputManager : MonoBehaviour {
 		CurrentState().Exit();
 		instance.states.Pop();
 		CurrentState().Enter();
-		// Debug.LogFormat("Entered state {0}", CurrentState().Name());
 	}
 
 	public static InputState CurrentState() {

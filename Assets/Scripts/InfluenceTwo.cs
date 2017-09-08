@@ -85,7 +85,8 @@ public class InfluenceTwo {
 		// 	turnsAway++;
 		// }
 		List<Vector2> positionsToCheck = new List<Vector2>();
-		positionsToCheck = Pather.GetAIMovePositions(unit, true);
+      UnitPather pather = new UnitPather(unit);
+		positionsToCheck = pather.BehaviorMovePositions(attacking: true);
 		while (positionsToCheck.Count > 0)
 		{
 			List<Vector2> addList = new List<Vector2>();
