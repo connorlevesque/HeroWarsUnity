@@ -78,6 +78,8 @@
      <Compile Include="Assets\Scripts\ProductionWeights.cs" />
      <Compile Include="Assets\Scripts\StartManager.cs" />
      <Compile Include="Assets\Scripts\Tile.cs" />
+     <Compile Include="Assets\Scripts\UI\ConfirmMenu.cs" />
+     <Compile Include="Assets\Scripts\UI\GameMenuPanel.cs" />
      <Compile Include="Assets\Scripts\UIManager.cs" />
      <Compile Include="Assets\Scripts\Unit.cs" />
      <Compile Include="Assets\Scripts\UnitPather.cs" />

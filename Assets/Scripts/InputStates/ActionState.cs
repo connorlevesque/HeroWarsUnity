@@ -20,18 +20,6 @@ public class ActionState : InputState {
          case "finishDraggingUnit":
             HandleUnitDragFinished((Unit) context[0]);
             break;
-         case "attackBtn":
-            TransitionTo(new AbilityState(selectedUnit));
-            break;
-         case "captureBtn":
-            HandleCaptureButton();
-            break;
-         case "waitBtn":
-            Wait();
-            break;
-         case "backBtn":
-            //HandleBackButton();
-            break;
          default:
             base.HandleInput(input, context); 
             break;
@@ -75,43 +63,10 @@ public class ActionState : InputState {
    //    uiManager.RemoveHighlights();
    // }
 
-   private void HandleCaptureButton() {
-      Tile tile = GridManager.GetTile(selectedUnit.xy);
-      if (tile.isBuilding) Capture((Building) tile);
-   }
-
-   private void Capture(Building building) {
-      building.Capture(selectedUnit);
-      Wait();
-   }
-
-   private void Wait() {
-      selectedUnit.Deactivate();
-      TransitionTo(new BaseState());
-   }
-
-   // private void HandleBackButton() {
-   //    Vector2 position = selectedUnit.xy;
-   //    bool hasMoved = position != Pather.center;
-   //    if (hasMoved) {
-   //       UndoMoveUnit(position);
-   //    } else {
-   //       TransitionBack();
-   //    }
+   // private void HandleCaptureButton() {
+   //    Tile tile = GridManager.GetTile(selectedUnit.xy);
+   //    if (tile.isBuilding) Capture((Building) tile);
    // }
-
-   // private void UndoMoveUnit(Vector2 position) {
-   //    GridManager.MoveUnit(position, Pather.center, () => { 
-   //       CheckActions();
-   //       InputManager.SetReceiveInput(true);
-   //    });
-   //    this.Enter();
-   // }
-
-   public void CheckActions() {
-      uiManager.ToggleCaptureBtn(GridManager.CanUnitCapture(selectedUnit));
-      uiManager.ToggleAttackBtn(CanUseAttackAction());
-   }
 
    public bool CanUseAttackAction() {
       bool isArtillery = selectedUnit.grouping == UnitGroup.artillery;
@@ -131,7 +86,6 @@ public class ActionState : InputState {
 
    public override void Exit() {
       uiManager.RemoveHighlights();
-      uiManager.HideActionUI();
    }
 
    public ActionState(Unit unit) {

@@ -10,8 +10,8 @@ public class InputState {
          case "endTurnBtn":
             InputManager.ChangeTurns();
             break;
-         case "backBtn":
-            TransitionBack();
+         case "gameMenuBtn":
+            TransitionTo(new GameMenuState());
             break;
          default: 
             // Debug.LogFormat("Unknown input '{0}' passed to HandleInput()", input);
@@ -31,7 +31,7 @@ public class InputState {
    }
 
    public InputState() {
-      uiManager = GameObject.FindWithTag("UIManager").GetComponent<UIManager>();
+      uiManager = InputManager.UIManager;
    }
 
    public string Name() {

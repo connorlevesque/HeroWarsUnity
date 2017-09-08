@@ -13,8 +13,20 @@ public class InputManager : MonoBehaviour {
 	private Unit selectedUnit;
 	private GameObject selectedPrefab;
 	private Building selectedBuilding;
-	public bool canReceiveInput = true;
+	private bool canReceiveInput = true;
 	private string menuType;
+
+   public static UIManager UIManager {
+      get { return instance.uiManager; }
+   }
+
+   public static InputState CurrentState {
+      get { return instance.states.Peek(); }
+   }
+   public static bool CanReceiveInput {
+      get { return instance.canReceiveInput; }
+      set { instance.canReceiveInput = value; }
+   }
 
 	void Awake() {
 		instance = this;
@@ -27,33 +39,21 @@ public class InputManager : MonoBehaviour {
 	}
 
 	public static void HandleInput(string input, params object[] context) {
-		if (CanReceiveInput()) CurrentState().HandleInput(input, context);
+		if (CanReceiveInput) CurrentState.HandleInput(input, context);
 	}
 
 	public static void TransitionTo(InputState newState) {
-		CurrentState().Exit();
+		CurrentState.Exit();
 		if (newState.Name() == "BaseState") instance.states.Clear();
 		instance.states.Push(newState);
 		newState.Enter();
 	}
 
 	public static void TransitionBack() {
-		if (CurrentState().Name() == "BaseState") return;
-		CurrentState().Exit();
+		if (CurrentState.Name() == "BaseState") return;
+		CurrentState.Exit();
 		instance.states.Pop();
-		CurrentState().Enter();
-	}
-
-	public static InputState CurrentState() {
-		return instance.states.Peek();
-	}
-
-	public static bool CanReceiveInput() {
-		return instance.canReceiveInput;
-	}
-
-	public static void SetReceiveInput(bool result) {
-		instance.canReceiveInput = result;
+		CurrentState.Enter();
 	}
 
 	public static bool IsPointerOverUIButton() {
@@ -88,10 +88,10 @@ public class InputManager : MonoBehaviour {
 		GridManager.HealUnits();
 		bool isComputerTurn = BattleManager.GetCurrentPlayerType() == PlayerType.computer;
 		if (isComputerTurn) {
-			SetReceiveInput(false);
+			CanReceiveInput = false;
 			instance.StartCoroutine(instance.computerOpponent.Run());
 		} else {
-			SetReceiveInput(true);
+			CanReceiveInput = true;
 		}
 	}
 

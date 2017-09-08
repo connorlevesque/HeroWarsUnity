@@ -12,9 +12,6 @@ public class BaseState : InputState {
          case "tapBuilding":
             HandleBuildingTapped((Building) context[1]); 
             break;
-         case "gameMenuBtn":
-            TransitionTo(new GameMenuState());
-            break;
          default:
             base.HandleInput(input, context); 
             break;
@@ -45,11 +42,6 @@ public class BaseState : InputState {
       }
    }
 
-   public override void Enter() {
-      uiManager.ShowBaseUI();
-   }
-
-   public override void Exit() {
-      uiManager.HideBaseUI();
-   }
+   public override void Enter() {}
+   public override void Exit() {}
 }

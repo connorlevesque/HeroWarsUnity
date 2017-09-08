@@ -3,6 +3,9 @@ public class GameMenuState : InputState {
 
    public override void HandleInput(string input, params object[] context) {
       switch (input) {
+         case "optionsBtn":
+            // handle
+            break;
          case "saveBtn":
             // handle
             break;
@@ -11,6 +14,9 @@ public class GameMenuState : InputState {
             break;
          case "quitBtn":
             TransitionTo(new ConfirmChangeSceneState("quit"));
+            break;
+         case "cancelBtn":
+            TransitionBack();
             break;
          case "yesBtn":
             // handle
@@ -25,10 +31,10 @@ public class GameMenuState : InputState {
    }
 
    public override void Enter() {
-      uiManager.ShowGameMenuUI();
+      uiManager.gameMenu.SetActive(true);
    }
 
    public override void Exit() {
-      uiManager.HideGameMenuUI();
+      uiManager.gameMenu.SetActive(false);
    }
 }

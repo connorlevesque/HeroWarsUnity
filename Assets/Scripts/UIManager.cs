@@ -7,17 +7,11 @@ public class UIManager : MonoBehaviour {
 
 	// Buttons
 	public GameObject gameMenuBtn;
-	public GameObject backBtn;
 	public GameObject nextBtn;
-	public GameObject attackBtn;
-	public GameObject captureBtn;
-	public GameObject waitBtn;
 	public GameObject endTurnBtn;
+   public GameObject gameMenu;
 	public GameObject fundsDisplay;
 	public ProductionMenu productionMenu;
-	public GameObject saveBtn;
-	public GameObject restartBtn;
-	public GameObject quitBtn;
 	public GameObject confirmMenu;
 	public GameObject yesBtn;
 	public GameObject noBtn;
@@ -38,14 +32,7 @@ public class UIManager : MonoBehaviour {
 	private void SetUpButtons() {
 		SetUpButton(gameMenuBtn, "gameMenuBtn");
 		SetUpButton(endTurnBtn, "endTurnBtn");
-		SetUpButton(backBtn, "backBtn");
 		SetUpButton(nextBtn, "nextBtn");
-		SetUpButton(attackBtn, "attackBtn");
-		SetUpButton(captureBtn, "captureBtn");
-		SetUpButton(waitBtn, "waitBtn");
-		SetUpButton(saveBtn, "saveBtn");
-		SetUpButton(restartBtn, "restartBtn");
-		SetUpButton(quitBtn, "quitBtn");
 		SetUpButton(yesBtn, "yesBtn");
 		SetUpButton(noBtn, "noBtn");
 		SetUpButton(okayBtn, "okayBtn");
@@ -60,7 +47,7 @@ public class UIManager : MonoBehaviour {
 		GameObject highlight = highlightBlue;
 		if (color == "blue") highlight = highlightBlue;
 		if (color == "red") highlight = highlightRed;
-      
+
 		foreach (Vector2 coord in coords) {
 			Vector3 position = new Vector3(coord.x, coord.y, -1);
 			highlight = (GameObject) Instantiate(highlight, position, Quaternion.identity);
@@ -105,49 +92,6 @@ public class UIManager : MonoBehaviour {
 	}
 
 	// Show/Hide UI for state methods
-
-	// base
-	public void ShowBaseUI() {
-		gameMenuBtn.SetActive(true);
-		backBtn.SetActive(false);
-	}
-
-	public void HideBaseUI() {
-		gameMenuBtn.SetActive(false);
-		backBtn.SetActive(true);
-	}
-
-	// action
-	public void ShowActionUI(List<Vector2> coords, bool canCapture, bool canAttack, bool canRide, bool canDrop) {
-		attackBtn.SetActive(true);
-		ToggleAttackBtn(canAttack);
-		ToggleCaptureBtn(canCapture);
-		Highlight(coords, "blue");
-	}
-
-	public void HideActionUI() {
-		attackBtn.SetActive(false);
-		captureBtn.SetActive(false);
-		waitBtn.SetActive(false);
-		RemoveHighlights();
-	}
-
-	public void ToggleCaptureBtn(bool turnOn) {
-		captureBtn.SetActive(turnOn);
-		waitBtn.SetActive(!turnOn);
-	}
-
-	public void ToggleAttackBtn(bool canAttack) {
-		attackBtn.GetComponent<Button>().interactable = canAttack;
-		if (canAttack)
-		{
-			attackBtn.GetComponent<Image>().color = Color.white;
-		} else {
-			attackBtn.GetComponent<Image>().color = Color.gray;
-		}
-	}
-
-	// target
 	public void ShowTargetUI(List<Vector2> highlightCoords) {
 		Highlight(highlightCoords, "red");
 	}
@@ -156,11 +100,6 @@ public class UIManager : MonoBehaviour {
 		RemoveHighlights();
 	}
 
-	// confirm
-	public void ShowConfirmUI() {}
-	public void HideConfirmUI() {}
-
-	// range
 	public void ShowRangeUI(List<Vector2> highlightCoords) {
 		Highlight(highlightCoords, "red");
 	}
@@ -169,7 +108,6 @@ public class UIManager : MonoBehaviour {
 		RemoveHighlights();
 	}
 
-	// Production
 	public void ShowProductionUI(GameObject[] unitPrefabs) {
 		productionMenu.CreateProductionSlots(unitPrefabs);
 		productionMenu.gameObject.SetActive(true);
@@ -177,21 +115,6 @@ public class UIManager : MonoBehaviour {
 
 	public void HideProductionUI() {
 		productionMenu.gameObject.SetActive(false);
-	}
-
-	// gameMenu
-	public void ShowGameMenuUI() {
-		endTurnBtn.SetActive(true);
-		//saveBtn.SetActive(true);
-		restartBtn.SetActive(true);
-		quitBtn.SetActive(true);
-	}
-
-	public void HideGameMenuUI() {
-		endTurnBtn.SetActive(false);
-		//saveBtn.SetActive(false);
-		restartBtn.SetActive(false);
-		quitBtn.SetActive(false);
 	}
 
 	public void ShowChangeSceneUI(string message) {

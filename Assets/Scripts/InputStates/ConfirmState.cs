@@ -18,11 +18,6 @@ public class ConfirmAbilityState : InputState {
       }
    }
 
-   public override void Enter() {
-      uiManager.ShowConfirmUI();
-   }
-
-   public override void Exit() {
-      uiManager.HideConfirmUI();
-   }
+   public override void Enter() {}
+   public override void Exit() {}
 }
