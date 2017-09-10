@@ -13,8 +13,6 @@ public class UIManager : MonoBehaviour {
    public GameObject gameMenu;
 	public GameObject fundsDisplay;
 	public ProductionMenu productionMenu;
-	public GameObject okayMenu;
-	public GameObject okayBtn;
 	// Highlights
 	private List<GameObject> highlights = new List<GameObject>();
    private List<GameObject> highlightPath = new List<GameObject>();
@@ -22,6 +20,7 @@ public class UIManager : MonoBehaviour {
 	public GameObject highlightRed;
 
    public GameObject confirmMenuPrefab;
+   public GameObject okayMenuPrefab;
 
 	void Start() {
 		SetUpButtons();
@@ -32,7 +31,6 @@ public class UIManager : MonoBehaviour {
 		SetUpButton(gameMenuBtn, "gameMenuBtn");
 		SetUpButton(endTurnBtn, "endTurnBtn");
 		SetUpButton(nextBtn, "nextBtn");
-		SetUpButton(okayBtn, "okayBtn");
 	}
 
 	private void SetUpButton(GameObject buttonObject, string input) {
@@ -96,6 +94,13 @@ public class UIManager : MonoBehaviour {
       confirmMenu.onNo = onNo;
    }
 
+   public void OpenOkayMenu(string message, Action onOkay) {
+      GameObject okayMenuGob = Instantiate(okayMenuPrefab, transform);
+      OkayMenu okayMenu = okayMenuGob.GetComponent<OkayMenu>();
+      okayMenu.message.text = message;
+      okayMenu.onOkay = onOkay;
+   }
+
 	// Show/Hide UI for state methods
 	public void ShowTargetUI(List<Vector2> highlightCoords) {
 		Highlight(highlightCoords, "red");
@@ -120,14 +125,5 @@ public class UIManager : MonoBehaviour {
 
 	public void HideProductionUI() {
 		productionMenu.gameObject.SetActive(false);
-	}
-
-	public void ShowWinLoseUI(string message) {
-		okayMenu.transform.GetChild(1).GetComponent<Text>().text = message;
-		okayMenu.SetActive(true);
-	}
-
-	public void HideWinLoseUI() {
-		okayMenu.SetActive(false);
 	}
 }

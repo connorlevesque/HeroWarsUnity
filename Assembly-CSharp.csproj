@@ -62,7 +62,6 @@
      <Compile Include="Assets\Scripts\InputStates\BaseState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ConfirmState.cs" />
      <Compile Include="Assets\Scripts\InputStates\DragPathRefiner.cs" />
-     <Compile Include="Assets\Scripts\InputStates\GameOverState.cs" />
      <Compile Include="Assets\Scripts\InputStates\InputState.cs" />
      <Compile Include="Assets\Scripts\InputStates\ProductionState.cs" />
      <Compile Include="Assets\Scripts\InputStates\UnitRangeState.cs" />
@@ -78,6 +77,7 @@
      <Compile Include="Assets\Scripts\Tile.cs" />
      <Compile Include="Assets\Scripts\UI\ConfirmMenu.cs" />
      <Compile Include="Assets\Scripts\UI\GameMenuPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\OkayMenu.cs" />
      <Compile Include="Assets\Scripts\UIManager.cs" />
      <Compile Include="Assets\Scripts\Unit.cs" />
      <Compile Include="Assets\Scripts\UnitPather.cs" />

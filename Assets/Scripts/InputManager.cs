@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -98,7 +99,16 @@ public class InputManager : MonoBehaviour {
 
 	public static void WinLoseLevel(string winOrLose) {
 		instance.computerOpponent.StopAllCoroutines();
-		TransitionTo(new GameOverState(winOrLose));
+      string message = "";
+      Action onOkay = ()=>{};
+      if (winOrLose == "win") {
+         message = "You won!";
+         onOkay = GameManager.LoadNextLevel;
+      } else if (winOrLose == "lose") {
+         message = "You lost!";
+         onOkay = GameManager.RestartLevel;
+      }
+		instance.uiManager.OpenOkayMenu(message, onOkay);
 	}
 
 	public static void UpdateAIUnitListOnDestroy(Unit unit) {
